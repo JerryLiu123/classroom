@@ -23,4 +23,6 @@
       <bean class="com.classroom.wnn.schedule.AutowiringSpringBeanJobFactory" />
     </property>
   </bean>
+  
+  <bean class="com.classroom.wnn.schedule.TestJob1" id="testJob1"></bean>
 </beans>

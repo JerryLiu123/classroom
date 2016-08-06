@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.classroom.wnn.service.RedisService;
-import com.classroom.wnn.util.Base64;
+import com.classroom.wnn.util.Convert;
 import com.classroom.wnn.util.HdfsFileSystem;
 import com.classroom.wnn.util.ObjectUtil;
 import com.classroom.wnn.util.constants.Constants;
@@ -46,7 +46,7 @@ public class VideoStreamController {
 	@RequestMapping(value = "/{cName}")
 	public void preview(@PathVariable("cName")String cName, HttpServletRequest req,HttpServletResponse resp){
 		try {
-			String curriculumName = Base64.decode(cName);//将课程名解码
+			String curriculumName = new String(Convert.decode(cName), "UTF-8");//将课程名解码
 			byte[] aa = redisService.getByte(curriculumName);//根据课程名获得redis中的课程对象
 			Object object = null;
 			if(aa != null){
@@ -63,17 +63,13 @@ public class VideoStreamController {
 			Configuration config=new Configuration();
 			FileSystem fs = null; 
 			FSDataInputStream in=null;
-			try {
-				fs = FileSystem.get(URI.create(filename),config);	
-				in=fs.open(new Path(filename));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		   final long fileLen = fs.getFileStatus(new Path(filename)).getLen();     
-		   String range=req.getHeader("Range");
-		   resp.setHeader("Content-type","video/mp4");
-		   OutputStream out=resp.getOutputStream();    
-		     if(range==null){
+			fs = FileSystem.get(URI.create(filename),config);	
+			in=fs.open(new Path(filename));
+		    final long fileLen = fs.getFileStatus(new Path(filename)).getLen();     
+		    String range=req.getHeader("Range");
+		    resp.setHeader("Content-type","video/mp4");
+		    OutputStream out=resp.getOutputStream();    
+		    if(range==null){
 		    	 filename=path.substring(path.lastIndexOf("/")+1);
 		         resp.setHeader("Content-Disposition", "attachment; filename="+filename);
 		         resp.setContentType("application/octet-stream");
@@ -93,20 +89,16 @@ public class VideoStreamController {
 			    resp.setContentType("video/mpeg4");
 			    resp.setHeader("Content-Range",ContentRange);
 			    in.seek(start);
-			    try{
-			        IOUtils.copyBytes(in, out, count, false);
-			    }catch(Exception e){
-			    	logger.error("播放视频失败:"+e);
-			    }
+			    IOUtils.copyBytes(in, out, count, false);
 		     }
-	        in.close();
-	        in = null;
-	        out.close();
-	        out = null;
-		} catch (Exception e) {
+		     in.close();
+		     in = null;
+		     out.close();
+		     out = null;
+		 } catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error("播放视频失败:"+e);
-		}
+		 }
 	}
 	
 	/**

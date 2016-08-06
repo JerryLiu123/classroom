@@ -23,7 +23,7 @@ public class LogAop {
 	ThreadLocal<Long> time = new ThreadLocal<Long>();// 线程安全，使用ThreadLocal会在线程使用该变量的时候自动创建一个变量的副本
 	ThreadLocal<String> tag=new ThreadLocal<String>();
 	
-	@Pointcut("@annotation(com.gladtrust.x315.manage.aop.annotation.Log)")
+	@Pointcut("@annotation(com.classroom.wnn.aop.annotation.Log)")
 	public void log(){
 		System.err.println("我是一个切入点");
 	}

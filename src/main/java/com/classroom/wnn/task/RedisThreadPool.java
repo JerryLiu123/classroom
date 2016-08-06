@@ -3,26 +3,21 @@ package com.classroom.wnn.task;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import com.classroom.wnn.util.ObjectUtil;
 import com.classroom.wnn.util.lock.RedisLockUtil;
 
 //InitializingBean 接口为初始化时使用
@@ -32,7 +27,7 @@ public class RedisThreadPool implements InitializingBean{
 	private static final String TASK_LOCK = "taskLock";//此字段标志位redis分布式锁
     private RedisTemplate redisTemplate;  
     private RedisLockUtil redisLockUtil;
-    private String key = "test";  
+    private String key = "classroom";  
     //private int cap = Short.MAX_VALUE;//最大阻塞的容量，超过容量将会导致清空旧数据  
     private byte[] rawKey;  
     private RedisConnectionFactory factory;  
@@ -40,7 +35,6 @@ public class RedisThreadPool implements InitializingBean{
     private BoundListOperations<String, byte[]> listOperations;//noblocking
     //感觉hash主要用于对于对象的修改时比较有用，但是在本实例中对象并不需要修改，所以就没有使用hash
     //private BoundHashOperations<String, byte[], Task> hashOperations;
-    private Lock lock = new ReentrantLock();//基于底层IO阻塞考虑  
       
     private boolean isClosed;  
     /* 默认池中线程数 */
