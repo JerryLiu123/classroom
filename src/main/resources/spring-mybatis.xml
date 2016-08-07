@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop" xsi:schemaLocation="
+<beans default-lazy-init="true"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
 http://www.springframework.org/schema/beans 
 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
 http://www.springframework.org/schema/tx 
@@ -10,7 +13,8 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 
 
 	<!-- 配置数据源 -->
-	<bean name="dataMySQL1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<bean name="dataMySQL1" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
 		<property name="url" value="${jdbc_url}" />
 		<property name="username" value="${jdbc_username}" />
 		<property name="password" value="${jdbc_password}" />
@@ -42,7 +46,8 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 		<property name="filters" value="mergeStat" />
 	</bean>
 	<!-- mysql 数据源2 -->
-	<bean name="dataMySQL2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<bean name="dataMySQL2" class="com.alibaba.druid.pool.DruidDataSource"
+		init-method="init" destroy-method="close">
 		<property name="url" value="${jdbc_url}" />
 		<property name="username" value="${jdbc_username}" />
 		<property name="password" value="${jdbc_password}" />
@@ -56,7 +61,8 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 		<property name="minIdle" value="0" />
 		<!-- 获取连接最大等待时间 -->
 		<property name="maxWait" value="60000" />
-		<!-- <property name="poolPreparedStatements" value="true" /> <property name="maxPoolPreparedStatementPerConnectionSize" value="33" /> -->
+		<!-- <property name="poolPreparedStatements" value="true" /> <property 
+			name="maxPoolPreparedStatementPerConnectionSize" value="33" /> -->
 		<property name="validationQuery" value="${validationQuery}" />
 		<property name="testOnBorrow" value="false" />
 		<property name="testOnReturn" value="false" />
@@ -75,7 +81,7 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 		<!-- <property name="filters" value="stat" /> -->
 		<property name="filters" value="mergeStat" />
 	</bean>
-	
+
 	<bean id="dataSource" class="com.classroom.wnn.util.DynamicDataSource">
 		<property name="targetDataSources">
 			<map key-type="java.lang.String">
@@ -91,57 +97,50 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 		<property name="dataSource" ref="dataSource" />
 		<property name="mapperLocations">
 			<list>
- 				<value>classpath:com/classroom/wnn/mapper/*.xml</value>
+				<value>classpath:com/classroom/wnn/mapper/*.xml</value>
 			</list>
 		</property>
 
 	</bean>
 
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.classroom.wnn.dao,com.classroom.wnn.dao.*" />
+		<property name="basePackage"
+			value="com.classroom.wnn.dao,com.classroom.wnn.dao.*" />
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
 	</bean>
 
 	<!-- 配置事务管理器 -->
-	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
 	<!-- 注解方式配置事物 -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
-	<!-- 拦截器方式配置事物 
-	<tx:advice id="transactionAdvice" transaction-manager="transactionManager"> 
-		<tx:attributes> 
-			<tx:method name="add*" propagation="REQUIRED" /> 
-			<tx:method name="append*" propagation="REQUIRED" /> 
-			<tx:method name="insert*" propagation="REQUIRED" /> 
-			<tx:method name="save*" propagation="REQUIRED" /> 
-			<tx:method name="update*" propagation="REQUIRED" /> 
-			<tx:method name="modify*" propagation="REQUIRED" /> 
-			<tx:method name="edit*" propagation="REQUIRED" /> 
-			<tx:method name="delete*" propagation="REQUIRED" /> 
-			<tx:method name="remove*" propagation="REQUIRED" /> 
-			<tx:method name="repair" propagation="REQUIRED" /> 
-			<tx:method name="delAndRepair" propagation="REQUIRED" /> 
-			<tx:method name="get*" propagation="SUPPORTS" /> 
-			<tx:method name="find*" propagation="SUPPORTS" /> 
-			<tx:method name="load*" propagation="SUPPORTS" /> 
-			<tx:method name="search*" propagation="SUPPORTS" /> 
-			<tx:method name="datagrid*" propagation="SUPPORTS" /> 
-			<tx:method name="*" propagation="SUPPORTS" /> 
-		</tx:attributes> 
-	</tx:advice> 
-	<aop:config> 
-		<aop:pointcut id="transactionPointcut" expression="execution(* myproject.service..*Impl.*(..))" /> 
-		<aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice" /> 
-	</aop:config> 
-	-->
+	<!-- 拦截器方式配置事物 <tx:advice id="transactionAdvice" transaction-manager="transactionManager"> 
+		<tx:attributes> <tx:method name="add*" propagation="REQUIRED" /> <tx:method 
+		name="append*" propagation="REQUIRED" /> <tx:method name="insert*" propagation="REQUIRED" 
+		/> <tx:method name="save*" propagation="REQUIRED" /> <tx:method name="update*" 
+		propagation="REQUIRED" /> <tx:method name="modify*" propagation="REQUIRED" 
+		/> <tx:method name="edit*" propagation="REQUIRED" /> <tx:method name="delete*" 
+		propagation="REQUIRED" /> <tx:method name="remove*" propagation="REQUIRED" 
+		/> <tx:method name="repair" propagation="REQUIRED" /> <tx:method name="delAndRepair" 
+		propagation="REQUIRED" /> <tx:method name="get*" propagation="SUPPORTS" /> 
+		<tx:method name="find*" propagation="SUPPORTS" /> <tx:method name="load*" 
+		propagation="SUPPORTS" /> <tx:method name="search*" propagation="SUPPORTS" 
+		/> <tx:method name="datagrid*" propagation="SUPPORTS" /> <tx:method name="*" 
+		propagation="SUPPORTS" /> </tx:attributes> </tx:advice> <aop:config> <aop:pointcut 
+		id="transactionPointcut" expression="execution(* myproject.service..*Impl.*(..))" 
+		/> <aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice" 
+		/> </aop:config> -->
 
 	<!-- 配置druid监控spring jdbc -->
-	<bean id="druid-stat-interceptor" class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor">
+	<bean id="druid-stat-interceptor"
+		class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor">
 	</bean>
-	<bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut" scope="prototype">
+	<bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut"
+		scope="prototype">
 		<property name="patterns">
 			<list>
 				<value>com.classroom.wnn.service.*</value>
@@ -149,6 +148,7 @@ http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 		</property>
 	</bean>
 	<aop:config>
-		<aop:advisor advice-ref="druid-stat-interceptor" pointcut-ref="druid-stat-pointcut" />
+		<aop:advisor advice-ref="druid-stat-interceptor"
+			pointcut-ref="druid-stat-pointcut" />
 	</aop:config>
 </beans>

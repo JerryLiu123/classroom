@@ -1,9 +1,16 @@
 package com.classroom.wnn.controller;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.classroom.wnn.bean.UserBean;
 import com.classroom.wnn.util.CookieUtil;
@@ -12,7 +19,7 @@ import com.classroom.wnn.util.SysParamerters;
 import com.classroom.wnn.util.constants.Constants;
 
 
-public class BaseContoller {
+public class BaseController {
 
 	private static String resource_version = "";
 	
@@ -93,6 +100,36 @@ public class BaseContoller {
 		map.put("user", user);
 		return map;
 	}
+	
+	@Autowired  
+	protected  HttpServletRequest request;
+	
+	protected static final Log LOG = LogFactory.getLog(BaseController.class);
+	
+	// AJAX输出，返回null
+    public String ajax(String content, String type, HttpServletResponse response) {
+        try {
+            response.setContentType(type + ";charset=UTF-8");
+            response.setHeader("Pragma", "No-cache");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setDateHeader("Expires", 0);
+            response.getWriter().write(content);
+            response.getWriter().flush();
+        } catch (IOException e) {
+            LOG.error("ajax", e);
+        }
+        return null;
+    }
+	
+	/**AJAX输出HTML，返回null**/
+    public String ajaxHtml(String html, HttpServletResponse response) {
+        return ajax(html, "text/html", response);
+    }
+    
+    /**AJAX输出json，返回null**/
+    public String ajaxJson(String json, HttpServletResponse response) {
+        return ajax(json, "application/json", response);
+    }
 	
 	
 	private static String getResource_version() {

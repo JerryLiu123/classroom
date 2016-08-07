@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 此文件为MVC全集功能，只开发测试环节时使用，正式发布时WEB.XML里引用 另外两个文件 -->
-<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans"
-	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+<beans default-lazy-init="true"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
@@ -11,14 +11,16 @@ http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/mvc 
 http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
 http://www.springframework.org/schema/aop 
-http://www.springframework.org/schema/aop/spring-aop.xsd"> 
+http://www.springframework.org/schema/aop/spring-aop.xsd">
 
+
+	<context:component-scan base-package="com.classroom.wnn.schedule" />
 	<context:component-scan base-package="com.classroom.wnn.service" />
 	<context:component-scan base-package="com.classroom.wnn.controller" />
 	<context:component-scan base-package="com.classroom.wnn.aop" />
-	<mvc:resources mapping="/resources/**" location="/resources/" /> 
-	
-	<aop:aspectj-autoproxy proxy-target-class="true" /> 
+	<!-- <mvc:resources mapping="/resources/**" location="/resources/" /> -->
+
+	<aop:aspectj-autoproxy proxy-target-class="true" />
 
 	<!-- 避免IE执行AJAX时,返回JSON出现下载文件 -->
 	<bean id="mappingJacksonHttpMessageConverter"
@@ -28,6 +30,13 @@ http://www.springframework.org/schema/aop/spring-aop.xsd">
 				<value>text/html;charset=UTF-8</value>
 			</list>
 		</property>
+	</bean>
+
+	<bean id="DefaultAnnotationHandlerMapping"
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+	</bean>
+	<bean id="AnnotationMethodHandlerAdapter"
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 	</bean>
 
 	<!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->
@@ -41,13 +50,10 @@ http://www.springframework.org/schema/aop/spring-aop.xsd">
 	</bean>
 
 	<!-- 对模型视图名称的解析，即在模型视图名称添加前后缀 -->
-	<bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
-		p:prefix="/" p:suffix=".jsp" />
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/" p:suffix=".jsp" />
 
 	<!-- 文件上传设置 -->
-	<bean id="multipartResolver"
-		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	<bean id="multipartResolver" class="com.classroom.wnn.controller.CustomMultipartResolver">
 		<property name="defaultEncoding">
 			<value>UTF-8</value>
 		</property>
@@ -58,16 +64,15 @@ http://www.springframework.org/schema/aop/spring-aop.xsd">
 			<value>4096</value>
 		</property>
 	</bean>
-	
-	<!-- 的配置拦截器, 多个拦截器,顺序执行   mvc是spring3之后的一个新的命名空间-->  
-<!-- 	<mvc:interceptors>    
-	    <mvc:interceptor>    
-	        匹配的是url路径， 如果不配置或/**,将拦截所有的Controller  
-	        <mvc:mapping path="/version/**" />  
-	        <mvc:mapping path="/feedback/**" />  
-	        <bean class="com.gladtrust.x315.manage.utility.UserInterceptor"></bean>    
-	    </mvc:interceptor>  
-	    当设置多个拦截器时，先按顺序调用preHandle方法，然后逆序调用每个拦截器的postHandle和afterCompletion方法  
-	</mvc:interceptors> -->
+
+	<!-- 的配置拦截器, 多个拦截器,顺序执行 mvc是spring3之后的一个新的命名空间 -->
+	<!-- <mvc:interceptors> 
+			<mvc:interceptor> 匹配的是url路径， 如果不配置或/**,将拦截所有的Controller 
+				<mvc:mapping path="/version/**" /> 
+				<mvc:mapping path="/feedback/**" /> 
+				<bean class="com.gladtrust.x315.manage.utility.UserInterceptor"></bean> 
+			</mvc:interceptor> 
+		当设置多个拦截器时，先按顺序调用preHandle方法，然后逆序调用每个拦截器的postHandle和afterCompletion方法 
+		</mvc:interceptors> -->
 
 </beans>

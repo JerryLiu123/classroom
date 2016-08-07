@@ -24,21 +24,33 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.util.Convert;
 import com.classroom.wnn.util.HdfsFileSystem;
+import com.classroom.wnn.util.JsonUtil;
 import com.classroom.wnn.util.ObjectUtil;
 import com.classroom.wnn.util.constants.Constants;
 
+import freemarker.template.utility.StringUtil;
+
 @Controller
 @RequestMapping(value = "/video")
-public class VideoStreamController {
+public class VideoStreamController extends BaseController{
 	private static Logger logger = Logger.getLogger(VideoStreamController.class);
 	
 	@Autowired
 	private RedisService redisService;
+	
+	@RequestMapping(value = "/toVideo")
+	public String toVideo(HttpServletRequest req,HttpServletResponse resp, Map<String, Object> datamap){
+		datamap = getBaseMap(datamap);
+		return "/index";
+	}
+	
 	/**
 	 * 播放视频，将课程名传入经过base64转码传入url
 	 * @param cName
@@ -105,21 +117,23 @@ public class VideoStreamController {
 	 * 上传视频
 	 */
 	@RequestMapping(value="/upload")
-	@ResponseBody
-	public Map<String, String> opload(@RequestParam("file") CommonsMultipartFile file,HttpServletRequest request){
+	public String opload(MultipartHttpServletRequest request,HttpServletResponse response){
 		Map<String, String> modelMap = new HashMap<String, String>(); 
+		MultipartFile file = request.getFile("file");
+		CommonsMultipartFile cf= (CommonsMultipartFile)file; 
 		if(!file.isEmpty()){
 			String name = file.getOriginalFilename();
-			DiskFileItem fi = (DiskFileItem)file.getFileItem(); 
+			DiskFileItem fi = (DiskFileItem)cf.getFileItem(); 
 			File inputFile = fi.getStoreLocation();
 			try {
 				HdfsFileSystem.getInstance().createFile(inputFile, "/course/"+name);
 				logger.info("上传文件成功");
-				modelMap.put("flag", "true");
+				modelMap.put("status", "success");
+				modelMap.put("message", "上传成功");
 				modelMap.put("site", "/course/"+name);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				modelMap.put("flag", "false");
+				modelMap.put("status", "false");
 				modelMap.put("errorValue", "上传失败");
 				logger.error("上传文件失败"+e);
 			}
@@ -127,6 +141,8 @@ public class VideoStreamController {
 			modelMap.put("flag", "false");
 			modelMap.put("errorValue", "请选择有效文件");
 		}
-		return modelMap;
+		return ajaxHtml(JsonUtil.getJsonString4JavaPOJO(modelMap), response);
+		//return modelMap;
 	}
+	
 }

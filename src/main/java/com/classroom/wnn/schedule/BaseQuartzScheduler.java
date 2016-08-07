@@ -27,6 +27,7 @@ import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import com.classroom.wnn.util.AopTargetUtils;
 
 
+
 public class BaseQuartzScheduler {
 	
 	
@@ -50,7 +51,7 @@ public class BaseQuartzScheduler {
 			IJob p = (IJob) AopTargetUtils.getTarget(map_pluMap.get(key));
 			
 			JobDetailFactoryBean rollbackOrderStatus = new JobDetailFactoryBean();
-			rollbackOrderStatus.setRequestsRecovery(true);
+			//rollbackOrderStatus.setRequestsRecovery(true);
 			rollbackOrderStatus.setJobClass(p.getClass());
 			rollbackOrderStatus.setDurability(true);
 			rollbackOrderStatus.setGroup("myGroup");
@@ -222,7 +223,7 @@ public class BaseQuartzScheduler {
 			}
 			
 			JobDetailFactoryBean rollbackOrderStatus = new JobDetailFactoryBean();
-			rollbackOrderStatus.setRequestsRecovery(true);
+			//rollbackOrderStatus.setRequestsRecovery(true);
 			rollbackOrderStatus.setJobClass(job);
 			rollbackOrderStatus.setDurability(true);
 			rollbackOrderStatus.setGroup(jobGroup);
