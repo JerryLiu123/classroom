@@ -2,7 +2,7 @@ package com.classroom.wnn.util.constants;
 
 public class Constants {
 	/**hadoop host**/
-	public static final String NamenodeIP="192.168.56.1";
+	public static final String NamenodeIP="192.168.217.1";
 	/**hadoop port**/
 	public static final String NamenodePort="9000";
 	/**hadoop hdfs file**/
@@ -55,7 +55,7 @@ public class Constants {
 	public static final int VALID_TYPE_INVALID = 2;
 	
 	/**站点虚拟目录，设置该值时不要加斜杠结尾**/
-	public static String applicationPath = "";
+	public static String applicationPath = "/classroom";
 	/**站点静态文件目录，设置该值时不要加斜杠结尾**/
 	public static String staticUrl = "/resources";
 	/**站点主页目录**/

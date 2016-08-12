@@ -28,14 +28,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.classroom.wnn.aop.annotation.Log;
 import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.util.Convert;
 import com.classroom.wnn.util.HdfsFileSystem;
 import com.classroom.wnn.util.JsonUtil;
 import com.classroom.wnn.util.ObjectUtil;
 import com.classroom.wnn.util.constants.Constants;
-
-import freemarker.template.utility.StringUtil;
 
 @Controller
 @RequestMapping(value = "/video")
@@ -45,7 +44,8 @@ public class VideoStreamController extends BaseController{
 	@Autowired
 	private RedisService redisService;
 	
-	@RequestMapping(value = "/toVideo")
+	@RequestMapping(value = "/toupvideo")
+	@Log(name="test")
 	public String toVideo(HttpServletRequest req,HttpServletResponse resp, Map<String, Object> datamap){
 		datamap = getBaseMap(datamap);
 		return "/index";
@@ -55,7 +55,7 @@ public class VideoStreamController extends BaseController{
 	 * 播放视频，将课程名传入经过base64转码传入url
 	 * @param cName
 	 */
-	@RequestMapping(value = "/{cName}")
+	@RequestMapping(value = "/dovideo/{cName}")
 	public void preview(@PathVariable("cName")String cName, HttpServletRequest req,HttpServletResponse resp){
 		try {
 			String curriculumName = new String(Convert.decode(cName), "UTF-8");//将课程名解码

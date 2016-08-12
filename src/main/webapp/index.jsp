@@ -1,17 +1,18 @@
+<%@page import="org.springframework.context.annotation.Import"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>文件上传</title>
-<link media="all" href="/css/common.css" type="text/css"
+<link href="${rs }css/common.css" type="text/css"
 	rel="stylesheet">
-<link media="all" href="/css/style.css" type="text/css" rel="stylesheet">
-<link media="all" href="/css/jquery-ui-1.10.1.custom.min.css"
+<link href="${rs }css/style.css" type="text/css" rel="stylesheet">
+<link href="${rs }css/jquery-ui-1.10.1.custom.min.css"
 	rel="stylesheet" type="text/css" />
-<script src="/js/jquery-1.10.2.min.js" type="text/javascript"></script>
-<script src="/js/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
-<script src="/js/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
-<script src="/javascript/public.js" type="text/javascript"></script>
-<script src="/js/ajaxfileupload.js" type="text/javascript"></script>
+<script src="${rs }js/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="${rs }js/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
+<script src="${rs }javascript/public.js" type="text/javascript"></script>
+<script src="${rs }js/ajaxfileupload.js" type="text/javascript"></script>
 <script type="text/javascript">
 			var fileName = "";
 			var oTimer = null;
@@ -23,7 +24,7 @@
 			    $.ajax({
 			        type: "post",
 			        dataType: "json",
-			        url: "/fileStatus/upfile/progress",
+			        url: ${ap }+"/fileStatus/upfile/progress",
 			        data: now.getTime(),
 			        success: function(data) {
 			        	$("#progress_percent").text(data.percent);
@@ -60,7 +61,7 @@
 			 */
 			function ajaxFileUpload() {
 			    $.ajaxFileUpload({
-			        url: '/video/upload',
+			        url: ${ap }+'/video/upload',
 			        secureuri: false,
 			        fileElementId: 'fileToUpload',
 			        dataType: 'json',
@@ -143,11 +144,11 @@
 		<div class="rsearch">
 			<input name="fileName" type="text" id="fileName" value="${fileName}"
 				class="inputxt3" />
-			<%--           	<form name="searchForm" id="search_form" action="/userFile/indexPage" method="post">
+ 			          	<form name="searchForm" id="search_form" action="/userFile/indexPage" method="post">
                   <span>文件名：</span>
                   <input name="fileName" type="text" id="fileName" value="${fileName}" class="inputxt3"/>
-                  <input name="btn" type="button" value="查询"  onclick="search();"/>
-             	</form> --%>
+                  <!-- <input name="btn" type="button" value="查询"  onclick="search();"/> -->
+             	</form>
 		</div>
 	</div>
 
