@@ -11,6 +11,7 @@ import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.log4j.Logger;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -25,13 +26,14 @@ import com.classroom.wnn.listener.FileUploadProgressListener;
  *
  */
 public class CustomMultipartResolver extends CommonsMultipartResolver {
-	
+	private static Logger logger = Logger.getLogger(CustomMultipartResolver.class);
 	private HttpServletRequest request;
 	
     protected FileUpload newFileUpload(FileItemFactory fileItemFactory) {  
         ServletFileUpload upload = new ServletFileUpload(fileItemFactory);  
         upload.setSizeMax(-1);  
-        if (request != null) {  
+        if (request != null) {
+        	System.err.println("注入监听");
         	HttpSession session = request.getSession();
         	FileUploadProgressListener progressListener = new FileUploadProgressListener(session);
             upload.setProgressListener(progressListener);  
@@ -56,6 +58,7 @@ public class CustomMultipartResolver extends CommonsMultipartResolver {
 			List<FileItem> fileItems = ((ServletFileUpload) fileUpload).parseRequest(request);
 			return parseFileItems(fileItems, encoding);
 		} catch (FileUploadBase.SizeLimitExceededException ex) {
+			logger.error("文件太大");
 			throw new MaxUploadSizeExceededException(fileUpload.getSizeMax(), ex);
 		} catch (FileUploadException ex) {
 			throw new MultipartException("Could not parse multipart servlet request", ex);

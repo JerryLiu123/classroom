@@ -9,10 +9,13 @@ http://www.springframework.org/schema/context
 http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
 	<!-- 引入属性文件 -->
-	<context:property-placeholder location="classpath:config.properties" />
+	<!-- <context:property-placeholder location="classpath:config.properties" /> -->
+	<context:property-placeholder location="${CLASSROOM_CFG}/config.properties" />
 
-	<bean id="contextHelper" class="com.classroom.wnn.util.SpringContextHelper" />
-
+	<context:component-scan base-package="com.classroom.wnn.schedule" />
+	<context:component-scan base-package="com.classroom.wnn.service" />
+	<context:component-scan base-package="com.classroom.wnn.aop" />
+	
 	<!-- redis -->
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
 		<property name="maxTotal" value="8" />
@@ -36,8 +39,7 @@ http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 		<property name="connectionFactory" ref="jedisConnectionFactory" />
 		<!-- 配置默认的序列化类，如果不用的话 在代码中可以将这个类set为null -->
 		<property name="defaultSerializer">
-			<bean
-				class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
 		</property>
 	</bean>
 	<!-- redis 分布式锁 -->
@@ -47,5 +49,15 @@ http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 		<property name="redisTemplate" ref="jedisTemplate" />
 		<property name="worker_num" value="5" />
 		<property name="redisLockUtil" ref="redisLockUtil" />
+	</bean>
+	<!-- 静态变量配置 -->
+	<bean lazy-init="false" id="Constants" class="com.classroom.wnn.util.constants.Constants">
+		<property name="namenodeIP" value="${namenode_ip}" />
+		<property name="namenodePort" value="${namenode_port}" />
+		<property name="hdfsAddress" value="${hdfs_address}" />
+		<property name="applicationPath" value="${application_path}"/>
+		<property name="staticUrl" value="${static_url}" />
+		<property name="homeUrl" value="${home_url}" />
+		<property name="isTest" value="${is_test}" />
 	</bean>
 </beans>

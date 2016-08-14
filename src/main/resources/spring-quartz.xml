@@ -15,7 +15,8 @@
 	</bean>
 	<bean id="baseQuartzScheduler"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-		<property name="configLocation" value="classpath:quartz.properties" />
+		<property name="configLocation" value="${CLASSROOM_CFG}/quartz.properties" />
+		<!-- <property name="configLocation" value="classpath:quartz.properties" /> -->
 		<property name="overwriteExistingJobs" value="true" />
 		<property name="autoStartup" value="true" />
 		<property name="applicationContextSchedulerContextKey" value="applicationContext" />

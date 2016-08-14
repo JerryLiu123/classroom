@@ -2,12 +2,23 @@ package com.classroom.wnn.util.constants;
 
 public class Constants {
 	/**hadoop host**/
-	public static final String NamenodeIP="192.168.217.1";
+	public static String namenodeIP="192.168.56.1";
 	/**hadoop port**/
-	public static final String NamenodePort="9000";
+	public static String namenodePort="9000";
 	/**hadoop hdfs file**/
-	public static final String HDFSAddress="hdfs://"+NamenodeIP+":"+NamenodePort;
-	/**存储用户信息的SESSION名称 **/
+	public static String hdfsAddress="hdfs://"+namenodeIP+":"+namenodePort;
+	/**站点虚拟目录，设置该值时不要加斜杠结尾**/
+	public static String applicationPath = "";
+	/**站点静态文件目录，设置该值时不要加斜杠结尾**/
+	public static String staticUrl = "";
+	/**站点主页目录**/
+	public static String homeUrl = "http://127.0.0.1:8080/classroom";
+	public static String businessUrl = "";
+	/**当前环境是否位测试**/
+	public static String isTest = "yes"; 
+	
+	
+	/**存储用户信息的SESSION名称 **/ 
 	public static final String SESSION_USER_INFO = "userInfo";
 	/**用户登录后生成的令牌，用于跳系统之间跳转时进行登录状态验证**/
 	public static final String SESSION_USER_TOKEN = "userToken";
@@ -44,7 +55,7 @@ public class Constants {
 	/**
 	 * 验证是否为 e-mail
 	 */
-	public static final int EMAIL = 4;
+	public static final int EMAIL = 4; 
 	/**失败**/
 	public static final int STATUS_FAILURE = 1;
 	/**成功**/
@@ -54,11 +65,58 @@ public class Constants {
 	/**状态：无效**/
 	public static final int VALID_TYPE_INVALID = 2;
 	
-	/**站点虚拟目录，设置该值时不要加斜杠结尾**/
-	public static String applicationPath = "/classroom";
-	/**站点静态文件目录，设置该值时不要加斜杠结尾**/
-	public static String staticUrl = "/resources";
-	/**站点主页目录**/
-	public static String homeUrl = "http://127.0.0.1:8080/classroom";
-	public static String businessUrl = "";
+	public String getNamenodeIP() {
+		return namenodeIP;
+	}
+	public void setNamenodeIP(String namenodeIP) {
+		Constants.namenodeIP = namenodeIP;
+	}
+	public String getNamenodePort() {
+		return namenodePort;
+	}
+	public void setNamenodePort(String namenodePort) {
+		Constants.namenodePort = namenodePort;
+	}
+	public String getHdfsAddress() {
+		return hdfsAddress;
+	}
+	public void setHdfsAddress(String hdfsAddress) {
+		Constants.hdfsAddress = hdfsAddress;
+	}
+	public String getStaticUrl() {
+		return staticUrl;
+	}
+	public void setStaticUrl(String staticUrl) {
+		Constants.staticUrl = staticUrl;
+	}
+	public String getHomeUrl() {
+		return homeUrl;
+	}
+	public void setHomeUrl(String homeUrl) {
+		Constants.homeUrl = homeUrl;
+	}
+	public String getBusinessUrl() {
+		return businessUrl;
+	}
+	public void setBusinessUrl(String businessUrl) {
+		Constants.businessUrl = businessUrl;
+	}
+	public String getApplicationPath() {
+		return applicationPath;
+	}
+	public void setApplicationPath(String applicationPath) {
+		Constants.applicationPath = applicationPath;
+	}
+	public String getIsTest() {
+		return isTest;
+	}
+	public void setIsTest(String isTest) {
+		Constants.isTest = isTest;
+	}
+	public Constants() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	
 }

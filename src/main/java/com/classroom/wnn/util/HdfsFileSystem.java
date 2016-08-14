@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -18,71 +19,75 @@ import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.classroom.wnn.util.constants.Constants;
+import com.classroom.wnn.util.lock.RedisLockUtil;
 
 
-public final class HdfsFileSystem {
-	private static final String HDFSURL=Constants.HDFSAddress;
+public class HdfsFileSystem{
 	private static Logger logger = Logger.getLogger(HdfsFileSystem.class);	
-	private static Configuration conf;
-	private static FileSystem fs;
-	private static DistributedFileSystem hdfs;
+	private static final String DEL_LOCK="delLock";
+//	private Configuration conf;
+//	private FileSystem fs;
+//	private DistributedFileSystem hdfs;
 	
-	private static HdfsFileSystem instance = HdfsFileSystem.getInstance();
+	//private static HdfsFileSystem instance = HdfsFileSystem.getInstance();
 	
 	private HdfsFileSystem() throws IOException{
-		conf = new Configuration();
-		//conf.set("dfs.socket.timeout", "180000");
-		fs = FileSystem.get(URI.create(HDFSURL) ,conf);
-		hdfs = (DistributedFileSystem)fs;
+//		conf = new Configuration();
+//		System.setProperty("hadoop.home.dir", "F:\\hadoop-2.6.0");
+//		//conf.set("dfs.socket.timeout", "180000");
+//		fs = FileSystem.get(URI.create(HDFSURL) ,conf);
+//		hdfs = (DistributedFileSystem)fs;
 	}
-	public static synchronized HdfsFileSystem getInstance(){
-		if(instance == null){
-			try {
-				instance = new HdfsFileSystem();
-				return instance;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return null;
-			}
-		}else{
-			return instance;
-		}
-	}
+//	public static synchronized HdfsFileSystem getInstance(){
+//		if(instance == null){
+//			try {
+//				instance = new HdfsFileSystem();
+//				return instance;
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				return null;
+//			}
+//		}else{
+//			return instance;
+//		}
+//	}
 	
     /** 
      * 列出所有DataNode的名字信息 
+     * @throws IOException 
      */  
-    public static void listDataNodeInfo() {          
-        try {  
-            DatanodeInfo[] dataNodeStats = hdfs.getDataNodeStats();  
-            String[] names = new String[dataNodeStats.length];  
-            System.out.println("List of all the datanode in the HDFS cluster:");  
-              
-            for (int i=0;i<names.length;i++) {  
-                names[i] = dataNodeStats[i].getHostName();  
-                System.out.println(names[i]);  
-            }  
-            System.out.println(hdfs.getUri().toString());  
-        } catch (Exception e) {  
-            e.printStackTrace();  
+    public static void listDataNodeInfo() throws IOException { 
+        Configuration conf = new Configuration();  
+        FileSystem fileSystem = FileSystem.get(URI.create(Constants.hdfsAddress), conf); 
+        DistributedFileSystem hdfs = (DistributedFileSystem)fileSystem;
+        DatanodeInfo[] dataNodeStats = hdfs.getDataNodeStats();  
+        String[] names = new String[dataNodeStats.length];  
+        System.out.println("List of all the datanode in the HDFS cluster:");  
+          
+        for (int i=0;i<names.length;i++) {  
+            names[i] = dataNodeStats[i].getHostName();  
+            System.out.println(names[i]);  
         }  
+        System.out.println(hdfs.getUri().toString());  
+        fileSystem.close();
     }
     /** 
      * 查看文件是否存在 
+     * @throws IOException 
      */  
-    public static boolean checkFileExist(String path) {  
+    public static boolean checkFileExist(String path) throws IOException {  
     	boolean flag = false;
-        try {  
-            Path f = new Path(path);  
-            boolean exist = fs.exists(f);  
-            flag = exist;
-        } catch (Exception e) {  
-            e.printStackTrace();  
-        }  
+        Configuration conf = new Configuration();  
+        FileSystem fileSystem = FileSystem.get(URI.create(path), conf); 
+        boolean exist = fileSystem.exists(new Path(path));  
+        flag = exist;
+        fileSystem.close();
         return flag;
     }
     
@@ -94,11 +99,12 @@ public final class HdfsFileSystem {
      * @throws IOException 
      */  
     public static void copyFile(String local, String remote) throws IOException {  
-        fs.copyFromLocalFile(new Path(local), new Path(remote)); 
+        Configuration conf = new Configuration();  
+        FileSystem fileSystem = FileSystem.get(URI.create(remote), conf);  
+    	fileSystem.copyFromLocalFile(new Path(local), new Path(remote)); 
         logger.info("上传文件至hdfs---from: " + local + " to " + remote);
-        fs.close();  
+        fileSystem.close();  
     } 
-    
     
     /**
      * File对象上传到hdfs 
@@ -106,21 +112,53 @@ public final class HdfsFileSystem {
      * @param hdfsPath
      * @throws IOException
      */
-    public static void createFile(File localPath, String hdfsPath) throws IOException {  
+    public static void createFile(File localPath, String path) throws IOException {  
         InputStream in = null;  
         try {  
-//            Configuration conf = new Configuration();  
-//            FileSystem fileSystem = FileSystem.get(URI.create(hdfsPath), conf);  
-            FSDataOutputStream out = fs.create(new Path(HDFSURL+hdfsPath));  
+        	logger.info("在hdfs上建立文件----开始:" + path);
+            Configuration conf = new Configuration();  
+            FileSystem fileSystem = FileSystem.get(URI.create(path), conf);  
+            FSDataOutputStream out = fileSystem.create(new Path(path));  
             in = new BufferedInputStream(new FileInputStream(localPath));  
             IOUtils.copyBytes(in, out, 4096, false);  
             out.hsync();  
             out.close();  
-            logger.info("在hdfs上建立文件:" + HDFSURL+hdfsPath);
+            fileSystem.close();
+            logger.info("在hdfs上建立文件----结束:" + path);
         } finally {  
             IOUtils.closeStream(in);  
         }  
     }
+    /**
+     * 删除hdfs中的文件
+     * @param path
+     * @return
+     * @throws IOException
+     * @throws TimeoutException 
+     */
+    public static boolean deleteFile(SpringContextHelper sch ,String path) throws IOException, TimeoutException{
+    	logger.info("在hdfs上删除文件----开始:" + path);
+    	RedisLockUtil redisLockUtil = (RedisLockUtil) sch.getBean("redisLockUtil");
+    	boolean flag = false;
+    	String value = null;
+    	try {
+			value = redisLockUtil.addLock(DEL_LOCK, Long.valueOf(3*60*1000));
+			if(!(checkFileExist(path))){//检测文件是否存在
+				logger.info(path+"文件不存在，请检查目录");
+				//throw new NullPointerException(path+"文件不存在，请检查目录");
+			}else{
+		        Configuration conf = new Configuration(); 
+				FileSystem fileSystem = FileSystem.get(URI.create(path), conf);
+				fileSystem.delete(new Path(path), true);
+				fileSystem.close();
+			}
+		}finally {
+			redisLockUtil.unLock(DEL_LOCK, value);
+		}
+    	logger.info("在hdfs上删除文件----结束:" + path);
+		return flag;
+    }
+    
     /** 
      * 读取hdfs中的文件内容 
      * 不可用
@@ -149,7 +187,9 @@ public final class HdfsFileSystem {
 //        return value.toString();
 //    }
     
-//    public static void main(String[] args){
-//    	HadoopServer.getInstance().listDataNodeInfo();
-//    }
+    private void ma() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

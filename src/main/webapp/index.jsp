@@ -11,7 +11,7 @@
 	rel="stylesheet" type="text/css" />
 <script src="${rs }js/jquery-1.10.2.min.js" type="text/javascript"></script>
 <script src="${rs }js/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
-<script src="${rs }javascript/public.js" type="text/javascript"></script>
+<script src="${rs }js/public.js" type="text/javascript"></script>
 <script src="${rs }js/ajaxfileupload.js" type="text/javascript"></script>
 <script type="text/javascript">
 			var fileName = "";
@@ -24,7 +24,7 @@
 			    $.ajax({
 			        type: "post",
 			        dataType: "json",
-			        url: ${ap }+"/fileStatus/upfile/progress",
+			        url: '${ap }/fileStatus/upfile/progress',
 			        data: now.getTime(),
 			        success: function(data) {
 			        	$("#progress_percent").text(data.percent);
@@ -60,16 +60,16 @@
 			 * 上传文件
 			 */
 			function ajaxFileUpload() {
+				var formData = new FormData($( "#upload_form" )[0]);
 			    $.ajaxFileUpload({
-			        url: ${ap }+'/video/upload',
+			        url: '${ap }/video/upload',
 			        secureuri: false,
+			        type: 'POST',
 			        fileElementId: 'fileToUpload',
 			        dataType: 'json',
-			        data: {
-			            name: 'file',
-			            id: 'id'
-			        },
-			        success: function(data, status) {
+			        data: formData,
+			        success: function(data) {
+			        	alert(data.status);
 			            if (typeof(data.status) != 'undefined') {
 			            	window.clearInterval(oTimer);
 			                if (data.status == 'success') {
@@ -96,7 +96,8 @@
 			            }
 			        },
 			        error: function(data, status, e) {
-			            alert(e);
+			        	console.log(e);
+			            alert("---"+e);
 			        }
 			    })
 			    return false;
@@ -122,11 +123,9 @@
 			function resetNavHeight() {
 			    var documentHeight;
 			    if (document.compatMode == 'BackCompat') {
-			        documentHeight = Math.max(document.body.clientHeight,
-			       	document.body.scrollHeight);
+			        documentHeight = Math.max(document.body.clientHeight, document.body.scrollHeight);
 			    } else {
-			        documentHeight = Math.max(document.documentElement.clientHeight,
-			        document.documentElement.scrollHeight);
+			        documentHeight = Math.max(document.documentElement.clientHeight, document.documentElement.scrollHeight);
 			    }
 			    $('.left').height(documentHeight - 48);
 			}
@@ -136,52 +135,44 @@
 		</script>
 </head>
 <body>
-	<h2>Hello World!</h2>
-	<div class="rtop">
-		<a href="#" onclick="showCont()" class="update" id="upload_button">上传</a>
-	</div>
-	<div class="pd15">
-		<div class="rsearch">
-			<input name="fileName" type="text" id="fileName" value="${fileName}"
-				class="inputxt3" />
- 			          	<form name="searchForm" id="search_form" action="/userFile/indexPage" method="post">
-                  <span>文件名：</span>
-                  <input name="fileName" type="text" id="fileName" value="${fileName}" class="inputxt3"/>
-                  <!-- <input name="btn" type="button" value="查询"  onclick="search();"/> -->
-             	</form>
+	
+		<div>
+			<a href="#" onclick="showCont()" id="upload_button">上传</a>
 		</div>
-	</div>
-
+<%-- 		<div class="pd15">
+			<div class="rsearch">
+				<input name="fileName" type="text" id="fileName" value="${fileName}"
+					class="inputxt3" />
+	 			          	<form name="searchForm" id="search_form" action="/userFile/indexPage" method="post">
+	                  <span>文件名：</span>
+	                  <input name="fileName" type="text" id="fileName" value="${fileName}" class="inputxt3"/>
+	                  <!-- <input name="btn" type="button" value="查询"  onclick="search();"/> -->
+	             	</form>
+			</div> 
+		</div>--%>
+	
+	<!-- 弹出框 -->
 	<div class="yxbox">
-		<h2>
-			<a href="#" class="fr" onclick="closeCont();">关闭</a>上传文件(超过1G文件上传同步较慢)
-		</h2>
-		<div class="pd15">
-			<form name="uploadForm" id="upload_form" action="#" method="post"
-				enctype="multipart/form-data">
-				<p class="mb20">
-					<input type="file" name="file" id="fileToUpload" title="请选择要上传的文件"
-						onchange="fSubmit();">
-				</p>
-				<div class="br" style="display: none;" id="progress_all">
-					<ul>
-						<li><h1>
-								<a href="#" class="fr" id="cancel">取消</a>
-							</h1>
-							<div class="process clearfix" id="process">
-								<span class="progress-box"> <span class="progress-bar"
-									style="width: 0%;" id="progress_bar"></span>
-								</span> <span id="progress_percent">0%</span>
-							</div>
-							<div class="info" id="info">
-								已上传：<span id="has_upload">0</span>MB 速度：<span id="upload_speed">0</span>KB/s
-							</div>
-							<div class="info" id="success_info" style="display: none;"></div>
-						</li>
-					</ul>
-				</div>
-			</form>
-		</div>
+	    <h2><a href="#" class="fr" onclick="closeCont();">关闭</a></h2>
+	    <div class="pd15">
+	    	<form name="uploadForm" id="upload_form"  action="#" method="post" enctype="multipart/form-data">
+	    	<p class="mb20"><input type="file"  name="file" id="fileToUpload" title="请选择要上传的文件" onchange="fSubmit();"></p>
+	        <div class="br"  style="display:none;" id="progress_all">
+	        	<ul>
+	            	<li><h1><a href="#" class="fr" id="cancel">取消</a></h1>
+	                	<div class="process clearfix" id="process">
+							<span class="progress-box">
+								<span class="progress-bar" style="width: 0%;" id="progress_bar"></span>
+							</span>
+	                        <span id="progress_percent">0%</span>
+	                    </div>
+	                    <div class="info" id="info">已上传：<span id="has_upload">0</span>MB  速度：<span id="upload_speed">0</span>KB/s</div>
+	                    <div class="info" id="success_info" style="display: none;"></div>
+	                </li>
+	            </ul>
+	        </div>
+	        </form>
+	    </div>
 	</div>
 	<div id="TB_overlayBG">&nbsp;</div>
 </body>

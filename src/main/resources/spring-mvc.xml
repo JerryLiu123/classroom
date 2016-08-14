@@ -14,12 +14,9 @@ http://www.springframework.org/schema/aop
 http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 
-	<context:component-scan base-package="com.classroom.wnn.schedule" />
-	<context:component-scan base-package="com.classroom.wnn.service" />
 	<context:component-scan base-package="com.classroom.wnn.controller" />
-	<context:component-scan base-package="com.classroom.wnn.aop" />
-	<!-- <mvc:resources mapping="/resources/**" location="/resources/" /> -->
-
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	<bean id="contextHelper" class="com.classroom.wnn.util.SpringContextHelper" />
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 
 	<!-- 避免IE执行AJAX时,返回JSON出现下载文件 -->
@@ -58,7 +55,7 @@ http://www.springframework.org/schema/aop/spring-aop.xsd">
 			<value>UTF-8</value>
 		</property>
 		<property name="maxUploadSize">
-			<value>32505856</value><!-- 上传文件大小限制为31M，31*1024*1024 -->
+			<value>2147483648</value><!-- 上传文件大小限制为2G，2*1024*1024*1024 -->
 		</property>
 		<property name="maxInMemorySize">
 			<value>4096</value>

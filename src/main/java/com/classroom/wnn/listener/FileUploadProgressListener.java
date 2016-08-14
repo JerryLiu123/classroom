@@ -19,7 +19,9 @@ public class FileUploadProgressListener implements ProgressListener {
     }  
 	
 	/**
-	 * pBytesRead 到目前为止读取文件的比特数 pContentLength 文件总大小 pItems 目前正在读取第几个文件
+	 * pBytesRead 到目前为止读取文件的比特数 
+	 * pContentLength 文件总大小 
+	 * pItems 目前正在读取第几个文件
 	 */
 	public void update(long pBytesRead, long pContentLength, int pItems) {
 		Progress status = (Progress) session.getAttribute("upload_ps");

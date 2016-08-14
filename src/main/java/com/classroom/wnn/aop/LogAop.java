@@ -59,9 +59,9 @@ public class LogAop {
 	
 	@Around("log()")
 	public Object aroundExec(ProceedingJoinPoint pjp) throws Throwable{
-		System.out.println("我是Around----开始");
+		//System.out.println("我是Around----开始");
 		Object o = pjp.proceed();
-		System.out.println("我是Around----结束");
+		//System.out.println("我是Around----结束");
 		return o;
 	}
 

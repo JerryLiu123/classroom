@@ -51,6 +51,7 @@ public class RedisThreadPool implements InitializingBean{
 	@SuppressWarnings("unchecked")
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
+		logger.info("初始化"+worker_num+"个线程池");
         factory = redisTemplate.getConnectionFactory();  
         connection = RedisConnectionUtils.getConnection(factory);  
         rawKey = redisTemplate.getKeySerializer().serialize(key);  

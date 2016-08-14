@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,10 +31,13 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.classroom.wnn.aop.annotation.Log;
 import com.classroom.wnn.service.RedisService;
+import com.classroom.wnn.task.DelHDFSFileTask;
+import com.classroom.wnn.task.RedisThreadPool;
 import com.classroom.wnn.util.Convert;
 import com.classroom.wnn.util.HdfsFileSystem;
 import com.classroom.wnn.util.JsonUtil;
 import com.classroom.wnn.util.ObjectUtil;
+import com.classroom.wnn.util.SpringContextHelper;
 import com.classroom.wnn.util.constants.Constants;
 
 @Controller
@@ -43,12 +47,20 @@ public class VideoStreamController extends BaseController{
 	
 	@Autowired
 	private RedisService redisService;
+	@Autowired
+	private RedisThreadPool redisThreadPool;
+	@Autowired
+	private SpringContextHelper contextHelper;
 	
 	@RequestMapping(value = "/toupvideo")
-	@Log(name="test")
 	public String toVideo(HttpServletRequest req,HttpServletResponse resp, Map<String, Object> datamap){
 		datamap = getBaseMap(datamap);
 		return "/index";
+	}
+	@RequestMapping(value = "/toopvideo")
+	public String toOpenVideo(HttpServletRequest req,HttpServletResponse resp, Map<String, Object> datamap){
+		datamap = getBaseMap(datamap);
+		return "/mystream";
 	}
 	
 	/**
@@ -58,20 +70,21 @@ public class VideoStreamController extends BaseController{
 	@RequestMapping(value = "/dovideo/{cName}")
 	public void preview(@PathVariable("cName")String cName, HttpServletRequest req,HttpServletResponse resp){
 		try {
-			String curriculumName = new String(Convert.decode(cName), "UTF-8");//将课程名解码
-			byte[] aa = redisService.getByte(curriculumName);//根据课程名获得redis中的课程对象
-			Object object = null;
-			if(aa != null){
-				//获得数据库中的课程对象
-			}else{
-				object = ObjectUtil.bytesToObject(aa);//将字节码反序列化成对象
-			}
-			String path = "";//获得文件的路径
+//			String curriculumName = new String(Convert.decode(cName), "UTF-8");//将课程名解码
+//			byte[] aa = redisService.getByte(curriculumName);//根据课程名获得redis中的课程对象
+//			Object object = null;
+//			if(aa != null){
+//				//获得数据库中的课程对象
+//			}else{
+//				object = ObjectUtil.bytesToObject(aa);//将字节码反序列化成对象
+//			}
+//			String path = "";//获得文件的路径
 			
-			if(StringUtils.isBlank(path)){
-				return;
-			}
-			String filename=Constants.HDFSAddress+"/"+path;
+//			if(StringUtils.isBlank(path)){
+//				return;
+//			}
+			String filename=Constants.hdfsAddress+"/course/"+cName+".mp4";
+			logger.info("filename:"+filename);
 			Configuration config=new Configuration();
 			FileSystem fs = null; 
 			FSDataInputStream in=null;
@@ -82,7 +95,7 @@ public class VideoStreamController extends BaseController{
 		    resp.setHeader("Content-type","video/mp4");
 		    OutputStream out=resp.getOutputStream();    
 		    if(range==null){
-		    	 filename=path.substring(path.lastIndexOf("/")+1);
+		    	 filename=filename.substring(filename.lastIndexOf("/")+1);
 		         resp.setHeader("Content-Disposition", "attachment; filename="+filename);
 		         resp.setContentType("application/octet-stream");
 		         resp.setContentLength((int)fileLen);
@@ -116,32 +129,41 @@ public class VideoStreamController extends BaseController{
 	/**
 	 * 上传视频
 	 */
-	@RequestMapping(value="/upload")
-	public String opload(MultipartHttpServletRequest request,HttpServletResponse response){
+	@RequestMapping(value="/upload" ,method=RequestMethod.POST)
+	@Log(name="test")
+	public String opload(@RequestParam("file") MultipartFile file,HttpServletResponse response){
 		Map<String, String> modelMap = new HashMap<String, String>(); 
-		MultipartFile file = request.getFile("file");
+		//MultipartFile file = request.getFile("file");
 		CommonsMultipartFile cf= (CommonsMultipartFile)file; 
 		if(!file.isEmpty()){
 			String name = file.getOriginalFilename();
+			String path = Constants.hdfsAddress+"/course/"+name;
 			DiskFileItem fi = (DiskFileItem)cf.getFileItem(); 
 			File inputFile = fi.getStoreLocation();
 			try {
-				HdfsFileSystem.getInstance().createFile(inputFile, "/course/"+name);
+				HdfsFileSystem.createFile(inputFile, path);
 				logger.info("上传文件成功");
 				modelMap.put("status", "success");
 				modelMap.put("message", "上传成功");
-				modelMap.put("site", "/course/"+name);
+				modelMap.put("site", path);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
+				DelHDFSFileTask delHDFSFileTask = new DelHDFSFileTask(contextHelper, path);
+				try {
+					redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(delHDFSFileTask));
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					logger.error("DelHDFSFileTask 序列化失败"+e);
+				}
 				modelMap.put("status", "false");
-				modelMap.put("errorValue", "上传失败");
+				modelMap.put("message", "上传失败");
 				logger.error("上传文件失败"+e);
 			}
 		}else{
 			modelMap.put("flag", "false");
-			modelMap.put("errorValue", "请选择有效文件");
+			modelMap.put("message", "请选择有效文件");
 		}
-		return ajaxHtml(JsonUtil.getJsonString4JavaPOJO(modelMap), response);
+		return ajaxJson(JsonUtil.getJsonString4JavaPOJO(modelMap), response);
 		//return modelMap;
 	}
 	
