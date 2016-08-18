@@ -55,7 +55,7 @@ public class VideoStreamController extends BaseController{
 	@RequestMapping(value = "/toupvideo")
 	public String toVideo(HttpServletRequest req,HttpServletResponse resp, Map<String, Object> datamap){
 		datamap = getBaseMap(datamap);
-		return "/index";
+		return "/index2";
 	}
 	@RequestMapping(value = "/toopvideo")
 	public String toOpenVideo(HttpServletRequest req,HttpServletResponse resp, Map<String, Object> datamap){
@@ -126,45 +126,58 @@ public class VideoStreamController extends BaseController{
 		 }
 	}
 	
-	/**
-	 * 上传视频
-	 */
-	@RequestMapping(value="/upload" ,method=RequestMethod.POST)
-	@Log(name="test")
-	public String opload(@RequestParam("file") MultipartFile file,HttpServletResponse response){
-		Map<String, String> modelMap = new HashMap<String, String>(); 
-		//MultipartFile file = request.getFile("file");
-		CommonsMultipartFile cf= (CommonsMultipartFile)file; 
-		if(!file.isEmpty()){
-			String name = file.getOriginalFilename();
-			String path = Constants.hdfsAddress+"/course/"+name;
-			DiskFileItem fi = (DiskFileItem)cf.getFileItem(); 
-			File inputFile = fi.getStoreLocation();
-			try {
-				HdfsFileSystem.createFile(inputFile, path);
-				logger.info("上传文件成功");
-				modelMap.put("status", "success");
-				modelMap.put("message", "上传成功");
-				modelMap.put("site", path);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				DelHDFSFileTask delHDFSFileTask = new DelHDFSFileTask(contextHelper, path);
-				try {
-					redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(delHDFSFileTask));
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					logger.error("DelHDFSFileTask 序列化失败"+e);
-				}
-				modelMap.put("status", "false");
-				modelMap.put("message", "上传失败");
-				logger.error("上传文件失败"+e);
-			}
-		}else{
-			modelMap.put("flag", "false");
-			modelMap.put("message", "请选择有效文件");
-		}
-		return ajaxJson(JsonUtil.getJsonString4JavaPOJO(modelMap), response);
-		//return modelMap;
-	}
+//	/**
+//	 * 上传视频
+//	 */
+//	@RequestMapping(value="/upload" ,method=RequestMethod.POST)
+//	@Log(name="test")
+//	public String opload(@RequestParam("file") MultipartFile file,HttpServletResponse response){
+//		Map<String, String> modelMap = new HashMap<String, String>(); 
+//		//MultipartFile file = request.getFile("file");
+//		CommonsMultipartFile cf= (CommonsMultipartFile)file; 
+//		if(!file.isEmpty()){
+//			String name = file.getOriginalFilename();
+//			String[] names = name.split("\\.");
+//			if(!(names[names.length-1].equals(".mp4"))){
+//				modelMap.put("flag", "false");
+//				modelMap.put("message", "只支持上传.mp4格式的文件");
+//				return ajaxJson(JsonUtil.getJsonString4JavaPOJO(modelMap), response);
+//			}
+//			StringBuffer c = new StringBuffer();
+//			for(int i=0;i<names.length-1;i++){
+//				c.append(names[i]);
+//			}
+//			name = Convert.toBase64String(c.toString()+System.currentTimeMillis())+names[names.length-1];
+//			String path = Constants.hdfsAddress+"/course/"+name;
+//			DiskFileItem fi = (DiskFileItem)cf.getFileItem();
+//			logger.info("----------------------------1");
+//			File inputFile = fi.getStoreLocation();
+//			try {
+//				logger.info("----------------------------2");
+//				HdfsFileSystem.createFile(inputFile, path);
+//				logger.info("上传文件成功");
+//				modelMap.put("status", "success");
+//				modelMap.put("message", "上传成功");
+//				modelMap.put("site", path);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				DelHDFSFileTask delHDFSFileTask = new DelHDFSFileTask(contextHelper, path);
+//				try {
+//					redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(delHDFSFileTask));
+//				} catch (Exception e1) {
+//					// TODO Auto-generated catch block
+//					logger.error("DelHDFSFileTask 序列化失败"+e);
+//				}
+//				modelMap.put("status", "false");
+//				modelMap.put("message", "上传失败");
+//				logger.error("上传文件失败"+e);
+//			}
+//		}else{
+//			modelMap.put("flag", "false");
+//			modelMap.put("message", "请选择有效文件");
+//		}
+//		return ajaxJson(JsonUtil.getJsonString4JavaPOJO(modelMap), response);
+//		//return modelMap;
+//	}
 	
 }

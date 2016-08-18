@@ -49,18 +49,18 @@ http://www.springframework.org/schema/aop/spring-aop.xsd">
 	<!-- 对模型视图名称的解析，即在模型视图名称添加前后缀 -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/" p:suffix=".jsp" />
 
-	<!-- 文件上传设置 -->
-	<bean id="multipartResolver" class="com.classroom.wnn.controller.CustomMultipartResolver">
+	<!-- 文件上传设置 弃用，现在使用stream + service 的方式 -->
+<!-- 	<bean id="multipartResolver" class="com.classroom.wnn.controller.CustomMultipartResolver">
 		<property name="defaultEncoding">
 			<value>UTF-8</value>
 		</property>
 		<property name="maxUploadSize">
-			<value>2147483648</value><!-- 上传文件大小限制为2G，2*1024*1024*1024 -->
+			<value>2147483648</value>上传文件大小限制为2G，2*1024*1024*1024
 		</property>
 		<property name="maxInMemorySize">
 			<value>4096</value>
 		</property>
-	</bean>
+	</bean> -->
 
 	<!-- 的配置拦截器, 多个拦截器,顺序执行 mvc是spring3之后的一个新的命名空间 -->
 	<!-- <mvc:interceptors> 

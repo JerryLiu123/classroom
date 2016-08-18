@@ -245,9 +245,7 @@ public class Validation {
 			DateFormat df = new SimpleDateFormat(fromat);
 			return df.parse(value.toString());
 		} catch (Exception ex) {
-			LOGGER.warn(
-					LogUtil.getLogStr("TimeConvertException", "500", value
-							+ ":" + fromat, "", ex.getMessage()), ex);
+			LOGGER.warn("解析日期错误", ex);
 		}
 		return null;
 	}

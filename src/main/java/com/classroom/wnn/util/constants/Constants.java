@@ -65,6 +65,15 @@ public class Constants {
 	/**状态：无效**/
 	public static final int VALID_TYPE_INVALID = 2;
 	
+	/*文件上传所用常量*/
+	public static final int BUFFER_LENGTH = 1024 * 1024 * 10;
+	public static final String FILE_NAME_FIELD = "name";
+	public static final String FILE_SIZE_FIELD = "size";
+	public static final String TOKEN_FIELD = "token";
+	public static final String SERVER_FIELD = "server";
+	public static final String SUCCESS = "success";
+	public static final String MESSAGE = "message";
+	
 	public String getNamenodeIP() {
 		return namenodeIP;
 	}

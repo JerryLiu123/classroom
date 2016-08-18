@@ -18,6 +18,25 @@
 			<param-value>UTF-8</param-value>
 		</init-param>
 	</filter>
+	<!-- 上传 servlet -->
+	<servlet>
+		<servlet-name>TokenServlet</servlet-name>
+		<servlet-class>com.classroom.wnn.servlet.TokenServlet</servlet-class>
+		<load-on-startup>0</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TokenServlet</servlet-name>
+		<url-pattern>/tk</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>StreamServlet</servlet-name>
+		<servlet-class>com.classroom.wnn.servlet.StreamServlet</servlet-class>
+		<load-on-startup>0</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>StreamServlet</servlet-name>
+		<url-pattern>/upload</url-pattern>
+	</servlet-mapping>
 
 	<filter-mapping>
 		<filter-name>encodingFilter</filter-name>

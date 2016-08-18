@@ -26,7 +26,11 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import com.classroom.wnn.util.constants.Constants;
 import com.classroom.wnn.util.lock.RedisLockUtil;
 
-
+/**
+ * hdfs 文件操作
+ * @author lgh
+ *
+ */
 public class HdfsFileSystem{
 	private static Logger logger = Logger.getLogger(HdfsFileSystem.class);	
 	private static final String DEL_LOCK="delLock";

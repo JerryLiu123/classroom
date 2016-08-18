@@ -262,7 +262,7 @@ public class JsonUtil {
 		try {
 			out = response.getWriter();
 		} catch (IOException e) {
-			LOGGER.error(LogUtil.getLogStr("IOException", "500", "", "", e.getMessage()),e);
+			LOGGER.error("返回页面json错误",e);
 		}
 		out.print(jsonObject);
 		out.close();
@@ -277,7 +277,7 @@ public class JsonUtil {
 		try {
 			out = response.getWriter();
 		} catch (IOException e) {
-			LOGGER.error(LogUtil.getLogStr("IOException", "500", "", "", e.getMessage()),e);
+			LOGGER.error("返回页面json错误",e);
 		}
 		out.write(data);
 		out.close();

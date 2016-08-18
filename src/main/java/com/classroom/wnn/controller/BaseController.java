@@ -14,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.classroom.wnn.bean.UserBean;
 import com.classroom.wnn.util.CookieUtil;
-import com.classroom.wnn.util.IDCoder;
 import com.classroom.wnn.util.SysParamerters;
 import com.classroom.wnn.util.constants.Constants;
 
@@ -74,7 +73,7 @@ public class BaseController {
 			String userFlag = CookieUtil.getCookieValueByName(request, "user_flag");// 最后是cookie
 			if (userFlag != null && userFlag.trim().length() > 0) {// 登录时已将用户ID加密并存入cookie，此处判断cookie
 				try {
-					String uid_str = IDCoder.DeCode(userFlag);
+					String uid_str = userFlag;
 					if (uid_str != null && uid_str.trim().length() > 0) {
 						Integer uid = Integer.parseInt(uid_str);
 						//user = userService.getUserInfo(uid);//根据cookie中的用户信息查找用户
