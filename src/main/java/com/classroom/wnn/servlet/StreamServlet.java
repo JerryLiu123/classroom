@@ -179,9 +179,8 @@ public class StreamServlet extends HttpServlet {
 					 * 可以先将本地磁盘的文件目录写入msql中的视频信息表
 					 * 然后开启一个线程，将文件上传到hdfs，上传完成后会对mysql中视频信息表中的文件目录进行修改，改为hdfs中的目录
 					 * */
-					System.err.println(redisThreadPool);
-//					UploadHDFSTask uploadHDFSTask = new UploadHDFSTask(IoUtil.getFile(fileName), fileName);
-//					redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(uploadHDFSTask));
+					UploadHDFSTask uploadHDFSTask = new UploadHDFSTask(IoUtil.getFile(fileName), fileName);
+					redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(uploadHDFSTask));
 					
 				} catch (IOException e) {
 					success = false;
