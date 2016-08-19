@@ -22,15 +22,18 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.classroom.wnn.bean.Range;
+import com.classroom.wnn.model.BiVideoInfo;
+import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.task.RedisThreadPool;
 import com.classroom.wnn.task.UploadHDFSTask;
-import com.classroom.wnn.util.Configurations;
 import com.classroom.wnn.util.IoUtil;
 import com.classroom.wnn.util.ObjectUtil;
+import com.classroom.wnn.util.SpringContextHelper;
 import com.classroom.wnn.util.constants.Constants;
 
 
 /**
+ * 必须使用jdk1.7及以上
  * 文件上传
  * part, stored it.
  * 会先调用 doGet 方法进行信息初始化
@@ -50,12 +53,16 @@ public class StreamServlet extends HttpServlet {
 	public static final String CONTENT_RANGE_HEADER = "content-range";
 	
 	private RedisThreadPool redisThreadPool;
+	private VideoService videoService;
+	private SpringContextHelper contextHelper;
 
 	@Override
 	public void init() throws ServletException {
 		ServletContext servletContext = this.getServletContext();  
 		WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(servletContext); 
 		redisThreadPool = (RedisThreadPool) ctx.getBean("redisThreadPool");
+		videoService = (VideoService) ctx.getBean("videoService");
+		contextHelper = (SpringContextHelper) ctx.getBean("contextHelper");
 	}
 	
 	/**
@@ -105,7 +112,8 @@ public class StreamServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		req.setCharacterEncoding("UTF-8");//解决乱码问题		doOptions(req, resp);
+		req.setCharacterEncoding("UTF-8");//解决乱码问题		
+		doOptions(req, resp);
 		final String token = req.getParameter(Constants.TOKEN_FIELD);
 		final String fileName = req.getParameter(Constants.FILE_NAME_FIELD);
 		Range range = IoUtil.parseRange(req);
@@ -170,7 +178,7 @@ public class StreamServlet extends HttpServlet {
 					System.out.println("TK: `" + token + "`, NE: `" + fileName + "`");
 					
 					/** if `STREAM_DELETE_FINISH`, then delete it. */
-					if (Configurations.isDeleteFinished()) {
+					if (Constants.streamDeleteFinish.equals("true")) {
 						IoUtil.getFile(fileName).delete();
 					}
 					logger.info("文件上传成功-----"+fileName);
@@ -179,7 +187,11 @@ public class StreamServlet extends HttpServlet {
 					 * 可以先将本地磁盘的文件目录写入msql中的视频信息表
 					 * 然后开启一个线程，将文件上传到hdfs，上传完成后会对mysql中视频信息表中的文件目录进行修改，改为hdfs中的目录
 					 * */
-					UploadHDFSTask uploadHDFSTask = new UploadHDFSTask(IoUtil.getFile(fileName), fileName);
+					BiVideoInfo info = new BiVideoInfo();
+					info.setvName(fileName);
+					info.setvFile(IoUtil.getFile(fileName).toString());
+					videoService.insertVider(info);
+					UploadHDFSTask uploadHDFSTask = new UploadHDFSTask(contextHelper, IoUtil.getFile(fileName), fileName, String.valueOf(info.getId()));
 					redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(uploadHDFSTask));
 					
 				} catch (IOException e) {
@@ -209,7 +221,7 @@ public class StreamServlet extends HttpServlet {
 			throws ServletException, IOException {
 		resp.setContentType("application/json;charset=utf-8");
 		resp.setHeader("Access-Control-Allow-Headers", "Content-Range,Content-Type");
-		resp.setHeader("Access-Control-Allow-Origin", Configurations.getCrossOrigins());
+		resp.setHeader("Access-Control-Allow-Origin", Constants.streamCrossOrigin);
 		resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 	}
 

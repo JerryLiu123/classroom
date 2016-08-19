@@ -16,6 +16,15 @@ public class Constants {
 	public static String businessUrl = "";
 	/**当前环境是否位测试**/
 	public static String isTest = "yes"; 
+	/**视频上传本地目录**/
+	public static String streamFileRepository;
+	/**是否立即删除**/
+	public static String streamDeleteFinish = "false";
+	/**本服务器是否允许其他域上传**/
+	public static String streamIsCross = "false";
+	/**允许的域**/
+	public static String streamCrossOrigin = "*";
+	public static String streamCrossServer="";
 	
 	
 	/**存储用户信息的SESSION名称 **/ 
@@ -65,7 +74,7 @@ public class Constants {
 	/**状态：无效**/
 	public static final int VALID_TYPE_INVALID = 2;
 	
-	/*文件上传所用常量*/
+	/**文件上传所用常量**/
 	public static final int BUFFER_LENGTH = 1024 * 1024 * 10;
 	public static final String FILE_NAME_FIELD = "name";
 	public static final String FILE_SIZE_FIELD = "size";
@@ -125,6 +134,36 @@ public class Constants {
 	public Constants() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+	public String getStreamFileRepository() {
+		return streamFileRepository;
+	}
+	public void setStreamFileRepository(String streamFileRepository) {
+		Constants.streamFileRepository = streamFileRepository;
+	}
+	public String getStreamDeleteFinish() {
+		return streamDeleteFinish;
+	}
+	public void setStreamDeleteFinish(String streamDeleteFinish) {
+		Constants.streamDeleteFinish = streamDeleteFinish;
+	}
+	public String getStreamIsCross() {
+		return streamIsCross;
+	}
+	public void setStreamIsCross(String streamIsCross) {
+		Constants.streamIsCross = streamIsCross;
+	}
+	public String getStreamCrossOrigin() {
+		return streamCrossOrigin;
+	}
+	public void setStreamCrossOrigin(String streamCrossOrigin) {
+		Constants.streamCrossOrigin = streamCrossOrigin;
+	}
+	public String getStreamCrossServer() {
+		return streamCrossServer;
+	}
+	public void setStreamCrossServer(String streamCrossServer) {
+		Constants.streamCrossServer = streamCrossServer;
 	}
 	
 	

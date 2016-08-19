@@ -16,7 +16,7 @@ http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 	<context:component-scan base-package="com.classroom.wnn.controller" />
 	<mvc:resources mapping="/resources/**" location="/resources/" />
-	<bean id="contextHelper" class="com.classroom.wnn.util.SpringContextHelper" />
+	
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 
 	<!-- 避免IE执行AJAX时,返回JSON出现下载文件 -->

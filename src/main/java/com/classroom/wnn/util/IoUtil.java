@@ -34,7 +34,7 @@ public class IoUtil {
 		if (filename == null || filename.isEmpty())
 			return null;
 		String name = filename.replaceAll("/", Matcher.quoteReplacement(File.separator));
-		File f = new File(Configurations.getFileRepository() + File.separator + name);
+		File f = new File(Constants.streamFileRepository + File.separator + name);
 		if (!f.getParentFile().exists())
 			f.getParentFile().mkdirs();
 		if (!f.exists())
@@ -53,7 +53,7 @@ public class IoUtil {
 		if (key == null || key.isEmpty())
 			return null;
 
-		File f = new File(Configurations.getFileRepository() + File.separator + key);
+		File f = new File(Constants.streamFileRepository + File.separator + key);
 		if (!f.getParentFile().exists())
 			f.getParentFile().mkdirs();
 		if (!f.exists())
@@ -66,7 +66,7 @@ public class IoUtil {
 		if (key == null || key.isEmpty())
 			return;
 
-		File f = new File(Configurations.getFileRepository() + File.separator + key);
+		File f = new File(Constants.streamFileRepository + File.separator + key);
 		if (!f.getParentFile().exists())
 			f.getParentFile().mkdirs();
 		if (!f.exists())
@@ -133,7 +133,7 @@ public class IoUtil {
 		
 		long length = getFile(fileName).length();
 		/** if `STREAM_DELETE_FINISH`, then delete it. */
-		if (Configurations.isDeleteFinished()) {
+		if (Constants.streamDeleteFinish.equals("true")) {
 			dst.delete();
 		}
 		

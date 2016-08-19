@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.classroom.wnn.util.Configurations;
 import com.classroom.wnn.util.TokenUtil;
 import com.classroom.wnn.util.constants.Constants;
 
@@ -41,8 +40,8 @@ public class TokenServlet extends HttpServlet {
 		JSONObject json = new JSONObject();
 		try {
 			json.put(Constants.TOKEN_FIELD, token);
-			if (Configurations.isCrossed()){
-				json.put(Constants.SERVER_FIELD, Configurations.getCrossServer());
+			if (Constants.streamIsCross.equals("true")){
+				json.put(Constants.SERVER_FIELD, Constants.streamCrossServer);
 			}
 			json.put(Constants.SUCCESS, true);
 			json.put(Constants.MESSAGE, "");

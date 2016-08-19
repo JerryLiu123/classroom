@@ -5,8 +5,13 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import com.classroom.wnn.dao.BiVideoInfoMapper;
+import com.classroom.wnn.model.BiVideoInfo;
+import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.util.Convert;
 import com.classroom.wnn.util.HdfsFileSystem;
+import com.classroom.wnn.util.IoUtil;
+import com.classroom.wnn.util.SpringContextHelper;
 import com.classroom.wnn.util.constants.Constants;
 
 public class UploadHDFSTask extends Task {
@@ -14,12 +19,16 @@ public class UploadHDFSTask extends Task {
 
 	private File inputFile;
 	private String fileName;
+	private SpringContextHelper contextHelper;
+	private String infoKey;
 	
 	
-	public UploadHDFSTask(File inputFile, String fileName) {
+	public UploadHDFSTask(SpringContextHelper contextHelper, File inputFile, String fileName, String infoKey) {
 		super();
 		this.inputFile = inputFile;
 		this.fileName = fileName;
+		this.contextHelper = contextHelper;
+		this.infoKey = infoKey;
 	}
 	
 	@Override
@@ -33,11 +42,16 @@ public class UploadHDFSTask extends Task {
 			for(int i=0;i<names.length-1;i++){
 				c.append(names[i]);
 			}
-			this.fileName = Convert.toBase64String(c.toString()+"_"+System.currentTimeMillis())+names[names.length-1];//将文件名加入当前时间时间戳，并进行base64编码
+			this.fileName = Convert.toBase64String(c.toString()+"_"+System.currentTimeMillis())+"."+names[names.length-1];//将文件名加入当前时间时间戳，并进行base64编码
 			String path = Constants.hdfsAddress+"/course/"+this.fileName;
 			logger.info("新写入hdfs地址为------"+path);
 			HdfsFileSystem.createFile(inputFile, path);
 			/*下面是要将新的地址目录写入 视频信息表 */
+			logger.info("线程更新视频信息表开始");
+			VideoService videoService = (VideoService) contextHelper.getBean("videoService");
+			videoService.updateHDFSFile(this.infoKey, path);
+			/*在本地新建临时文件，表示此文件可以被删除*/
+			logger.info("线程更新视频信息表成功");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error("写入hdfs文件出错----"+e);

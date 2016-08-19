@@ -16,6 +16,7 @@ http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 	<context:component-scan base-package="com.classroom.wnn.service" />
 	<context:component-scan base-package="com.classroom.wnn.aop" />
 	
+	<bean id="contextHelper" class="com.classroom.wnn.util.SpringContextHelper" />
 	<!-- redis -->
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
 		<property name="maxTotal" value="8" />
@@ -59,5 +60,6 @@ http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 		<property name="staticUrl" value="${static_url}" />
 		<property name="homeUrl" value="${home_url}" />
 		<property name="isTest" value="${is_test}" />
+		<property name="streamFileRepository" value="${stream_file_repository}" />
 	</bean>
 </beans>

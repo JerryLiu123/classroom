@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.classroom.wnn.dao.BiVideoInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.classroom.wnn.model.BiVideoInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="v_name" property="vName" jdbcType="VARCHAR" />
+    <result column="v_hdfsfile" property="vHdfsfile" jdbcType="VARCHAR" />
+    <result column="v_file" property="vFile" jdbcType="VARCHAR" />
+    <result column="v_available" property="vAvailable" jdbcType="INTEGER" />
+    <result column="v_isdel" property="vIsdel" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, v_name, v_hdfsfile, v_file, v_available, v_isdel
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from bi_videoinfo
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from bi_videoinfo
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.classroom.wnn.model.BiVideoInfo" >
+    insert into bi_videoinfo (id, v_name, v_hdfsfile, 
+      v_file, v_available, v_isdel
+      )
+    values (#{id,jdbcType=INTEGER}, #{vName,jdbcType=VARCHAR}, #{vHdfsfile,jdbcType=VARCHAR}, 
+      #{vFile,jdbcType=VARCHAR}, #{vAvailable,jdbcType=INTEGER}, #{vIsdel,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.classroom.wnn.model.BiVideoInfo" >
+    insert into bi_videoinfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="vName != null" >
+        v_name,
+      </if>
+      <if test="vHdfsfile != null" >
+        v_hdfsfile,
+      </if>
+      <if test="vFile != null" >
+        v_file,
+      </if>
+      <if test="vAvailable != null" >
+        v_available,
+      </if>
+      <if test="vIsdel != null" >
+        v_isdel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="vName != null" >
+        #{vName,jdbcType=VARCHAR},
+      </if>
+      <if test="vHdfsfile != null" >
+        #{vHdfsfile,jdbcType=VARCHAR},
+      </if>
+      <if test="vFile != null" >
+        #{vFile,jdbcType=VARCHAR},
+      </if>
+      <if test="vAvailable != null" >
+        #{vAvailable,jdbcType=INTEGER},
+      </if>
+      <if test="vIsdel != null" >
+        #{vIsdel,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.classroom.wnn.model.BiVideoInfo" >
+    update bi_videoinfo
+    <set >
+      <if test="vName != null" >
+        v_name = #{vName,jdbcType=VARCHAR},
+      </if>
+      <if test="vHdfsfile != null" >
+        v_hdfsfile = #{vHdfsfile,jdbcType=VARCHAR},
+      </if>
+      <if test="vFile != null" >
+        v_file = #{vFile,jdbcType=VARCHAR},
+      </if>
+      <if test="vAvailable != null" >
+        v_available = #{vAvailable,jdbcType=INTEGER},
+      </if>
+      <if test="vIsdel != null" >
+        v_isdel = #{vIsdel,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.classroom.wnn.model.BiVideoInfo" >
+    update bi_videoinfo
+    set v_name = #{vName,jdbcType=VARCHAR},
+      v_hdfsfile = #{vHdfsfile,jdbcType=VARCHAR},
+      v_file = #{vFile,jdbcType=VARCHAR},
+      v_available = #{vAvailable,jdbcType=INTEGER},
+      v_isdel = #{vIsdel,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <!-- ================================= -->
+  <insert id="insertReturnKey" parameterType="com.classroom.wnn.model.BiVideoInfo" useGeneratedKeys="true" keyProperty="id">
+    insert into bi_videoinfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="vName != null" >
+        v_name,
+      </if>
+      <if test="vHdfsfile != null" >
+        v_hdfsfile,
+      </if>
+      <if test="vFile != null" >
+        v_file,
+      </if>
+      <if test="vAvailable != null" >
+        v_available,
+      </if>
+      <if test="vIsdel != null" >
+        v_isdel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="vName != null" >
+        #{vName,jdbcType=VARCHAR},
+      </if>
+      <if test="vHdfsfile != null" >
+        #{vHdfsfile,jdbcType=VARCHAR},
+      </if>
+      <if test="vFile != null" >
+        #{vFile,jdbcType=VARCHAR},
+      </if>
+      <if test="vAvailable != null" >
+        #{vAvailable,jdbcType=INTEGER},
+      </if>
+      <if test="vIsdel != null" >
+        #{vIsdel,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+</mapper>
