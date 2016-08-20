@@ -72,7 +72,7 @@ public class RedisLockUtil {
 							 * 
 							 * 也就是说走完下一步之后上一个线程已经无法也不用再释放锁
 							 * */
-							String timeOld_ = redisService.getSet(lock, timeNow);//t2  //加锁 
+							String timeOld_ = redisService.getSet(lock, timeNow, 0L);//t2  //加锁 
 							/*
 							 * redis的自带操作都是 原子的 所以 应该不存在N个线程同时获得timeOld_并设置 timeNow
 							 * 多个线程竞争时，当第一个走到这里的线程因为已经添加了time所以以后的线程不存在timeOld_为空的情况

@@ -188,7 +188,7 @@ public class RedisServiceImpl implements RedisService {
 		});
 	}
 	
-	public String getSet(final String key, final String value) {
+	public String getSet(final String key, final String value, final long liveTime) {
 		// TODO Auto-generated method stub
 		return redisTemplate.execute(new RedisCallback<String>() {
 			public String doInRedis(RedisConnection connection)
@@ -200,6 +200,9 @@ public class RedisServiceImpl implements RedisService {
 					if(b != null && b.length > 0){
 						cc = new String(b, redisCode);
 					}
+	                if (liveTime > 0) {
+	                    connection.expire(key.getBytes(), liveTime);
+	                }
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

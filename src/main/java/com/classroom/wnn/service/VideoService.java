@@ -1,5 +1,9 @@
 package com.classroom.wnn.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import com.classroom.wnn.model.BiVideoInfo;
 
 public interface VideoService {
@@ -25,4 +29,15 @@ public interface VideoService {
 	 * @return
 	 */
 	public BiVideoInfo getVideoById(Integer id);
+	
+	/**
+	 * 将已上传hdfs并且未从本地删除的文件，从本地删除
+	 * */
+	public List<BiVideoInfo> delIsHDFSIsLocal();
+	
+	/**
+	 * 上传文件到hdfs
+	 * @throws IOException 
+	 */
+	public void uploadHDFS(File inputFile, String fileName, String infoKey) throws IOException;
 }

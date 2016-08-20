@@ -5,15 +5,17 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import com.classroom.wnn.dao.BiVideoInfoMapper;
-import com.classroom.wnn.model.BiVideoInfo;
 import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.util.Convert;
 import com.classroom.wnn.util.HdfsFileSystem;
-import com.classroom.wnn.util.IoUtil;
 import com.classroom.wnn.util.SpringContextHelper;
 import com.classroom.wnn.util.constants.Constants;
 
+/**
+ * 此方法弃用
+ * 如果是服务器A上传的文件，但是被服务器B拿到这个任务了，那么文件将会上传失败
+ *
+ */
 public class UploadHDFSTask extends Task {
 	private static Logger logger = Logger.getLogger(UploadHDFSTask.class);
 
@@ -36,6 +38,7 @@ public class UploadHDFSTask extends Task {
 		// TODO Auto-generated method stub
 		//super.run();
 		try {
+			
 			logger.info("新线程写入hdfs开始------");
 			String[] names = this.fileName.split("\\.");
 			StringBuffer c = new StringBuffer();
@@ -50,7 +53,6 @@ public class UploadHDFSTask extends Task {
 			logger.info("线程更新视频信息表开始");
 			VideoService videoService = (VideoService) contextHelper.getBean("videoService");
 			videoService.updateHDFSFile(this.infoKey, path);
-			/*在本地新建临时文件，表示此文件可以被删除*/
 			logger.info("线程更新视频信息表成功");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

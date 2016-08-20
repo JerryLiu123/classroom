@@ -142,4 +142,8 @@
       </if>
     </trim>
   </insert>
+  
+  <select id="selectUpdateHDFS" resultMap="BaseResultMap">
+  	SELECT * FROM bi_videoinfo <![CDATA[ WHERE v_hdfsfile IS NOT NULL AND v_hdfsfile != '' AND v_file != '0' ]]>
+  </select>
 </mapper>

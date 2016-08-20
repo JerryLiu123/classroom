@@ -121,10 +121,10 @@ public class HdfsFileSystem{
         try {  
         	logger.info("在hdfs上建立文件----开始:" + path);
             Configuration conf = new Configuration();  
-            FileSystem fileSystem = FileSystem.get(URI.create(path), conf);  
-            FSDataOutputStream out = fileSystem.create(new Path(path));  
-            in = new BufferedInputStream(new FileInputStream(localPath));  
-            IOUtils.copyBytes(in, out, 4096, false);  
+            FileSystem fileSystem = FileSystem.get(URI.create(path), conf);//初始化连接信息,初始化的时候慢，但是还不能用连接池，因为初始化信息都是不同的
+            FSDataOutputStream out = fileSystem.create(new Path(path));//建立文件  
+            in = new BufferedInputStream(new FileInputStream(localPath));//获得输入流
+            IOUtils.copyBytes(in, out, 4096, false);//写入文件
             out.hsync();  
             out.close();  
             fileSystem.close();

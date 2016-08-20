@@ -25,9 +25,7 @@ import com.classroom.wnn.bean.Range;
 import com.classroom.wnn.model.BiVideoInfo;
 import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.task.RedisThreadPool;
-import com.classroom.wnn.task.UploadHDFSTask;
 import com.classroom.wnn.util.IoUtil;
-import com.classroom.wnn.util.ObjectUtil;
 import com.classroom.wnn.util.SpringContextHelper;
 import com.classroom.wnn.util.constants.Constants;
 
@@ -39,6 +37,7 @@ import com.classroom.wnn.util.constants.Constants;
  * 会先调用 doGet 方法进行信息初始化
  * 然后将要上传的数据进行分片，并多次调用 doPost方法进行上传，并会记录每一次上传之后的文件大小(由常量BUFFER_LENGTH控制)，当上传异常时，会根据这个大小进行断点续传
  * Range 对象中的size参数表示当前上传的文件大小
+ * 
  * start 表示文件的总大小
  * @author java_speed
  * 修改时间 2016年8月18日
@@ -139,6 +138,7 @@ public class StreamServlet extends HttpServlet {
 			}
 			/*
 			 * 以输出流的方式写入文件
+			 * 主要是hdfs不支持同一个文件多次写入啊！！！
 			 * */
 			out = new FileOutputStream(f, true);
 			content = req.getInputStream();
@@ -171,7 +171,6 @@ public class StreamServlet extends HttpServlet {
 //				dst.delete();
 				// TODO: f.renameTo(dst); 重命名在Windows平台下可能会失败，stackoverflow建议使用下面这句
 				try {
-					// 先删除
 					IoUtil.getFile(fileName).delete();
 				
 					Files.move(f.toPath(), f.toPath().resolveSibling(fileName));
@@ -186,13 +185,17 @@ public class StreamServlet extends HttpServlet {
 					 * 走到这里表示已经上传完成
 					 * 可以先将本地磁盘的文件目录写入msql中的视频信息表
 					 * 然后开启一个线程，将文件上传到hdfs，上传完成后会对mysql中视频信息表中的文件目录进行修改，改为hdfs中的目录
+					 * 因为是一部分一部分传的，所以如果直接存hdfs的话会导致性能下降,这里就先存到本地，然后再存入hdfs
 					 * */
 					BiVideoInfo info = new BiVideoInfo();
 					info.setvName(fileName);
 					info.setvFile(IoUtil.getFile(fileName).toString());
 					videoService.insertVider(info);
-					UploadHDFSTask uploadHDFSTask = new UploadHDFSTask(contextHelper, IoUtil.getFile(fileName), fileName, String.valueOf(info.getId()));
-					redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(uploadHDFSTask));
+					
+					/*
+					 * 写入文件到hdfs,并删除本地文件
+					 * */
+					videoService.uploadHDFS(IoUtil.getFile(fileName), fileName, String.valueOf(info.getId()));
 					
 				} catch (IOException e) {
 					success = false;
@@ -227,6 +230,7 @@ public class StreamServlet extends HttpServlet {
 
 	@Override
 	public void destroy() {
+		System.out.println("容器销毁");
 		super.destroy();
 	}
 

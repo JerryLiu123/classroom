@@ -95,7 +95,7 @@ public interface  RedisService {
      */
     public Boolean setValueForExist(final String key, final String value);
     
-    public String getSet(final String key, final String value);
+    public String getSet(final String key, final String value, final long liveTime);
 
     /**
      * 检查是否连接成功
