@@ -11,11 +11,6 @@ import com.classroom.wnn.util.HdfsFileSystem;
 import com.classroom.wnn.util.SpringContextHelper;
 import com.classroom.wnn.util.constants.Constants;
 
-/**
- * 此方法弃用
- * 如果是服务器A上传的文件，但是被服务器B拿到这个任务了，那么文件将会上传失败
- *
- */
 public class UploadHDFSTask extends Task {
 	private static Logger logger = Logger.getLogger(UploadHDFSTask.class);
 

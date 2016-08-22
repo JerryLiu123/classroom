@@ -92,18 +92,22 @@ public class VideoStreamController extends BaseController{
 					 * B会在本地找，但是因为文件在A上所以会播放失败，这怎么办
 					 * 因暂时无法解决在分布式下的这个问题，所以本地视频暂时不支持播放
 					 * 暂时想到的就是弄一个ftp服务器作为存储，但是会给ftp服务器造成很大的压力
+					 * 或者可以使用存储共享
 					 * */
 					
-//					String range=req.getHeader("Range");
-//					if(range.equals("bytes=0-")){//如果是第一次播放，才加入使用者
-//						FileUserAdd(filename);
-//					}
-//					playLocal(filename, req, resp);
+					String range=req.getHeader("Range");
+					if(range.equals("bytes=0-")){//如果是第一次播放，才加入使用者
+						FileUserAdd(filename);
+					}
+					playLocal(filename, req, resp);
 					return;
 				}
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
 				logger.error("视频目录解码失败"+e);
+			} catch (TimeoutException e) {
+				// TODO Auto-generated catch block
+				logger.error("添加视频使用者失败"+e);
 			}
 	}
 	

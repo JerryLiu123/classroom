@@ -2,6 +2,7 @@ package com.classroom.wnn.service.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -52,10 +53,27 @@ public class VideoServiceImpl implements VideoService {
 	public List<BiVideoInfo> delIsHDFSIsLocal() {
 		// TODO Auto-generated method stub
 		List<BiVideoInfo> infos = videoMapper.selectUpdateHDFS();
+		List<BiVideoInfo> upInfos = new ArrayList<BiVideoInfo>();
+		List<String> fileNames = new ArrayList<String>();
 		for(BiVideoInfo info : infos){
 			if(!redisService.exists("FileUser"+info.getvFile())){//如果不存在此锁，代表文件没有被占用，可以删除
-				
+				File f = new File(info.getvFile());
+				if(!f.getParentFile().exists()){//如果目录不存在则直接更新数据库信息,将本地文件目录设为0
+					info.setvFile("0");
+				}else if(!f.exists()){//如果目录不为空，但是找不到文件的话，也直接更新数据库信息
+					info.setvFile("0");
+				}else{//代表找到文件
+					fileNames.add(info.getvFile());
+					info.setvFile("0");
+				}
+				upInfos.add(info);
 			}
+		}
+		//先更新数据库信息，再删除文件
+		videoMapper.updateBatch(upInfos);
+		for(String fileName : fileNames){
+			File f = new File(fileName);
+			f.delete();
 		}
 		return null;
 	}

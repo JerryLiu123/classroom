@@ -16,7 +16,7 @@ public interface VideoService {
 	public int insertVider(BiVideoInfo info);
 	
 	/**
-	 * 更新hdfs地址，并将本地地址设置为0
+	 * 更新hdfs地址
 	 * @param key
 	 * @param path
 	 * @return

@@ -18,8 +18,6 @@ public class DelLocalVideoJob extends IJob implements org.quartz.StatefulJob{
 
 	@Autowired
 	VideoService videoService;
-	@Autowired
-	RedisService redisService;
 	
 	@Override
 	public String getCrty() {
@@ -31,7 +29,7 @@ public class DelLocalVideoJob extends IJob implements org.quartz.StatefulJob{
 	@Override
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 		// TODO Auto-generated method stub
-
+		videoService.delIsHDFSIsLocal();
 	}
 
 }

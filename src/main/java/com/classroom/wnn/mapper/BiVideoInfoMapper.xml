@@ -146,4 +146,53 @@
   <select id="selectUpdateHDFS" resultMap="BaseResultMap">
   	SELECT * FROM bi_videoinfo <![CDATA[ WHERE v_hdfsfile IS NOT NULL AND v_hdfsfile != '' AND v_file != '0' ]]>
   </select>
+  
+  <update id="updateBatch" parameterType="list">
+ 	update into bi_videoinfo
+  	<trim prefix="set" suffixOverrides=",">
+  		<trim prefix="v_name =case" suffix="end,">
+  			<foreach collection="list" item="i" index="index">
+  				<if test="i.vName!=null">
+  					when id=#{i.id} then #{i.vName,jdbcType=VARCHAR},
+  				</if>
+  			</foreach>
+  		</trim>
+  		
+  		<trim prefix="v_hdfsfile =case" suffix="end,">
+  			<foreach collection="list" item="i" index="index">
+  				<if test="i.vHdfsfile!=null">
+  					when id=#{i.id} then #{i.vHdfsfile,jdbcType=VARCHAR},
+  				</if>
+  			</foreach>
+  		</trim>
+  		
+  		<trim prefix="v_file = case" suffix="end,">
+  			<foreach collection="list" item="i" index="index">
+  				<if test="i.vFile!=null">
+  					when id=#{i.id} then #{i.vFile,jdbcType=VARCHAR},
+  				</if>
+  			</foreach>
+  		</trim>
+  		
+  		<trim prefix="v_available = case" suffix="end,">
+  			<foreach collection="list" item="i" index="index">
+  				<if test="i.vAvailable!=null">
+  					when id=#{i.id} then #{i.vAvailable,jdbcType=INTEGER},
+  				</if>
+  			</foreach>
+  		</trim>
+  		
+  		<trim prefix="v_isdel = case" suffix="end,">
+  			<foreach collection="list" item="i" index="index">
+  				<if test="i.vIsdel!=null">
+  					when id=#{i.id} then #{i.vIsdel,jdbcType=INTEGER},
+  				</if>
+  			</foreach>
+  		</trim>
+  	</trim>
+  	where 
+  	<foreach collection="list" separator="or" item="i" index="index" >
+  		id=#{i.id}
+  	</foreach>
+  </update>
 </mapper>

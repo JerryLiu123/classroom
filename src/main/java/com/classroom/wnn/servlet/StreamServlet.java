@@ -25,7 +25,9 @@ import com.classroom.wnn.bean.Range;
 import com.classroom.wnn.model.BiVideoInfo;
 import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.task.RedisThreadPool;
+import com.classroom.wnn.task.UploadHDFSTask;
 import com.classroom.wnn.util.IoUtil;
+import com.classroom.wnn.util.ObjectUtil;
 import com.classroom.wnn.util.SpringContextHelper;
 import com.classroom.wnn.util.constants.Constants;
 
@@ -88,7 +90,7 @@ public class StreamServlet extends HttpServlet {
 			File f = IoUtil.getTokenedFile(token);
 			start = f.length();
 			/** file size is 0 bytes. */
-			/*如果是初次上传，将文件重命名*/
+			/*如果上传文件大小为0将文件重命名*/
 			if (token.endsWith("_0") && "0".equals(size) && 0 == start){
 				f.renameTo(IoUtil.getFile(fileName));
 			}
@@ -195,7 +197,12 @@ public class StreamServlet extends HttpServlet {
 					/*
 					 * 写入文件到hdfs,并删除本地文件
 					 * */
-					videoService.uploadHDFS(IoUtil.getFile(fileName), fileName, String.valueOf(info.getId()));
+					//videoService.uploadHDFS(IoUtil.getFile(fileName), fileName, String.valueOf(info.getId()));
+					/*
+					 * 这里采用存储共享，那么就可以向操作本地文件一样操作远程文件
+					 * */
+					UploadHDFSTask hdfsTask = new UploadHDFSTask(contextHelper, IoUtil.getFile(fileName), fileName, String.valueOf(info.getId()));
+					redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(hdfsTask));
 					
 				} catch (IOException e) {
 					success = false;
