@@ -57,6 +57,9 @@ public class VideoServiceImpl implements VideoService {
 		List<String> fileNames = new ArrayList<String>();
 		for(BiVideoInfo info : infos){
 			if(!redisService.exists("FileUser"+info.getvFile())){//如果不存在此锁，代表文件没有被占用，可以删除
+				/*
+				 * 到了这一步说明此文件有hdfs地址，所以文件不可能再被使用本地地址播放
+				 * */
 				File f = new File(info.getvFile());
 				if(!f.getParentFile().exists()){//如果目录不存在则直接更新数据库信息,将本地文件目录设为0
 					info.setvFile("0");

@@ -58,26 +58,6 @@ public class VideoStreamController extends BaseController{
 	 */
 	@RequestMapping(value = "/dovideo/{filename}")
 	public void preview(@PathVariable("filename")String filename, HttpServletRequest req,HttpServletResponse resp){
-			/*
-			 * 这里如果传视频地址的话
-			 * 如果清理本地视频的程序在视频播放期间运行的话，清理程序会将本地文件删除，那么清理完
-			 * */
-			//根据视频id获得视频地址
-//			boolean isHDFS = true;
-//			String redisKey = "redisFile_"+id;
-//			String file = redisService.get(redisKey);
-//			if(!StringUtils.isBlank(file)){
-//				//如果redis中没有则将从数据库中查找信息
-//				BiVideoInfo info = videoService.getVideoById(Integer.parseInt(id));
-//				//判断是否由hdfs目录，如果有的话使用hdfs目录，没有使用本地目录
-//				if(StringUtils.isBlank(info.getvHdfsfile())){
-//					isHDFS = false;
-//					file = info.getvFile();
-//				}else{
-//					file = info.getvHdfsfile();
-//				}
-//				redisService.set(redisKey, file);//将目录信息放入redis中
-//			}
 			//将目录进行base64解码
 			try {
 				filename = new String(Convert.fromBase64String(filename), "UTF-8");
@@ -91,8 +71,9 @@ public class VideoStreamController extends BaseController{
 					 * 但是服务器B 收到请求播放文件，如果此时还没有将文件上传到hdfs
 					 * B会在本地找，但是因为文件在A上所以会播放失败，这怎么办
 					 * 因暂时无法解决在分布式下的这个问题，所以本地视频暂时不支持播放
-					 * 暂时想到的就是弄一个ftp服务器作为存储，但是会给ftp服务器造成很大的压力
-					 * 或者可以使用存储共享
+					 * 暂时想到的就是弄一个ftp服务器作为存储，但是会给ftp服务器和网络带宽造成很大的压力
+					 * 或者可以使用存储共享，本项目用的是存储共享,但是使用存储共享应该也有ftp服务器的问题，因为都是通过网络传输
+					 * 这个问题暂时没有条件验证
 					 * */
 					
 					String range=req.getHeader("Range");
@@ -100,7 +81,6 @@ public class VideoStreamController extends BaseController{
 						FileUserAdd(filename);
 					}
 					playLocal(filename, req, resp);
-					return;
 				}
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
@@ -108,6 +88,9 @@ public class VideoStreamController extends BaseController{
 			} catch (TimeoutException e) {
 				// TODO Auto-generated catch block
 				logger.error("添加视频使用者失败"+e);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				logger.error("视频播放失败---"+e);
 			}
 	}
 	
@@ -117,10 +100,19 @@ public class VideoStreamController extends BaseController{
 	@RequestMapping(value = "/defvideouser/{filename}")
 	public void defVideoUser(@PathVariable("filename")String filename){
 		try {
-			FileUserDel(filename);
+			//判断是否为本地文件播放
+			filename = new String(Convert.fromBase64String(filename), "UTF-8");
+			Pattern pattern = Pattern.compile("^hdfs.*");
+			Matcher matcher = pattern.matcher(filename);
+			if(!matcher.matches()){//如果是本地文件则进行使用量减一
+				FileUserDel(filename);
+			}
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
 			logger.error("删除文件使用者异常---"+e);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			logger.error("文件解码失败---"+e);
 		}
 		
 	}
@@ -130,59 +122,54 @@ public class VideoStreamController extends BaseController{
 	 * @param filename
 	 * @param req
 	 * @param resp
+	 * @throws IOException 
 	 */
-	private void playHDFS(String filename, HttpServletRequest req,HttpServletResponse resp){
-		try {
-			Configuration config=new Configuration();
-			FileSystem fs = null; 
-			FSDataInputStream in=null;
-			fs = FileSystem.get(URI.create(filename),config);	
-			in=fs.open(new Path(filename));
-		    final long fileLen = fs.getFileStatus(new Path(filename)).getLen();     
-		    String range=req.getHeader("Range");
-		    resp.setHeader("Content-type","video/mp4");
-		    OutputStream out=resp.getOutputStream();    
-		    if(range==null){
-		    	 filename=filename.substring(filename.lastIndexOf("/")+1);
-		         resp.setHeader("Content-Disposition", "attachment; filename="+filename);
-		         resp.setContentType("application/octet-stream");
-		         resp.setContentLength((int)fileLen);
-		    	 IOUtils.copyBytes(in, out, fileLen, false);
-		     }else{
-			    long start=Integer.valueOf(range.substring(range.indexOf("=")+1, range.indexOf("-")));
-			    long count=fileLen-start;
-			    long end;
-			    if(range.endsWith("-")){
-			    	  end=fileLen-1;
-			    }else{
-			    	  end=Integer.valueOf(range.substring(range.indexOf("-")+1));
-			    }
-			    String ContentRange="bytes "+String.valueOf(start)+"-"+end+"/"+String.valueOf(fileLen);
-			    resp.setStatus(206);
-			    resp.setContentType("video/mpeg4");
-			    resp.setHeader("Content-Range",ContentRange);
-			    in.seek(start);
-			    IOUtils.copyBytes(in, out, count, false);
-		     }
-		     in.close();
-		     in = null;
-		     out.close();
-		     out = null;
-		 } catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("播放视频失败:"+e);
-		 }
+	private void playHDFS(String filename, HttpServletRequest req,HttpServletResponse resp) throws IOException{
+		Configuration config=new Configuration();
+		FileSystem fs = null; 
+		FSDataInputStream in=null;
+		fs = FileSystem.get(URI.create(filename),config);	
+		in=fs.open(new Path(filename));
+	    final long fileLen = fs.getFileStatus(new Path(filename)).getLen();     
+	    String range=req.getHeader("Range");
+	    resp.setHeader("Content-type","video/mp4");
+	    OutputStream out=resp.getOutputStream();    
+	    if(range==null){
+	    	 filename=filename.substring(filename.lastIndexOf("/")+1);
+	         resp.setHeader("Content-Disposition", "attachment; filename="+filename);
+	         resp.setContentType("application/octet-stream");
+	         resp.setContentLength((int)fileLen);
+	    	 IOUtils.copyBytes(in, out, fileLen, false);
+	     }else{
+		    long start=Integer.valueOf(range.substring(range.indexOf("=")+1, range.indexOf("-")));
+		    long count=fileLen-start;
+		    long end;
+		    if(range.endsWith("-")){
+		    	  end=fileLen-1;
+		    }else{
+		    	  end=Integer.valueOf(range.substring(range.indexOf("-")+1));
+		    }
+		    String ContentRange="bytes "+String.valueOf(start)+"-"+end+"/"+String.valueOf(fileLen);
+		    resp.setStatus(206);
+		    resp.setContentType("video/mpeg4");
+		    resp.setHeader("Content-Range",ContentRange);
+		    in.seek(start);
+		    IOUtils.copyBytes(in, out, count, false);
+	     }
+	     in.close();
+	     in = null;
+	     out.close();
+	     out = null;
 	}
 	
 	/**
-	 * 播放本地文件
+	 * 播放本地文件,和上面播放hdfs文件逻辑相同，正在寻找更好的方法
 	 * @param filename
 	 * @param req
 	 * @param resp
+	 * @throws IOException 
 	 */
-	private void playLocal(String filename, HttpServletRequest req,HttpServletResponse resp){
-		try {
-			
+	private void playLocal(String filename, HttpServletRequest req,HttpServletResponse resp) throws IOException{
 			File file = new File(filename);
 			InputStream ins = new FileInputStream(file);
 			BufferedInputStream bis = new BufferedInputStream(ins);
@@ -217,11 +204,6 @@ public class VideoStreamController extends BaseController{
 		     bis = null;
 		     out.close();
 		     out = null;
-		    
-		 } catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error("播放视频失败:"+e);
-		 }
 	}
 	
 	/**
