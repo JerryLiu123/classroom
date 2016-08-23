@@ -31,9 +31,8 @@ public class TokenServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String name = req.getParameter(Constants.FILE_NAME_FIELD);
 		/**/
-		System.err.println(name);
 		String size = req.getParameter(Constants.FILE_SIZE_FIELD);
-		String token = TokenUtil.generateToken(name, size);
+		String token = TokenUtil.generateToken(name, size, "0");
 		
 		PrintWriter writer = resp.getWriter();
 		
