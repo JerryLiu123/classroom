@@ -36,10 +36,10 @@ public class UploadHDFSTask extends Task {
 			
 			logger.info("新线程写入hdfs开始------");
 			//将文件名加入当前时间时间戳，并进行base64编码
-			this.fileName = Convert.toBase64String(this.fileName.substring(0,this.fileName.lastIndexOf("."))+
-													"_"+
-													System.currentTimeMillis())+
-													this.fileName.substring(this.fileName.lastIndexOf("."));
+//			this.fileName = Convert.toBase64String(this.fileName.substring(0,this.fileName.lastIndexOf("."))+
+//													"_"+
+//													System.currentTimeMillis())+
+//													this.fileName.substring(this.fileName.lastIndexOf("."));
 			String path = Constants.hdfsAddress+"/course/"+this.fileName;
 			logger.info("新写入hdfs地址为------"+path);
 			HdfsFileSystem.createFile(inputFile, path);

@@ -203,7 +203,7 @@ public class StreamServlet extends HttpServlet {
 					rename(f, token, getNextNum(token));
 					//将数据库中的文件信息标记为上传完成
 					BiVideoInfo dto = new BiVideoInfo();
-					dto.setId(Integer.parseInt(redisService.get("file_upload_id"+fileName)));
+					dto.setId(Integer.parseInt(redisService.get("file_upload_id"+token)));
 					dto.setvAvailable(1);
 					videoService.updateVideo(dto);
 					redisService.del(new String[]{UPLOAD_ZONE_KEY+"-num-"+token, UPLOAD_ZONE_KEY+"-start-"+token, "file_upload_id"+token});//删除reids中的key
@@ -211,7 +211,7 @@ public class StreamServlet extends HttpServlet {
 					rename(f, token, getNextNum(token));
 					//将数据库中的文件信息标记为上传完成
 					BiVideoInfo dto = new BiVideoInfo();
-					dto.setId(Integer.parseInt(redisService.get("file_upload_id"+fileName)));
+					dto.setId(Integer.parseInt(redisService.get("file_upload_id"+token)));
 					dto.setvAvailable(1);
 					videoService.updateVideo(dto);
 					redisService.del(new String[]{UPLOAD_ZONE_KEY+"-num-"+token, UPLOAD_ZONE_KEY+"-start-"+token, "file_upload_id"+token});//删除reids中的key
