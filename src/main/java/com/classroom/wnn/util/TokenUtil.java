@@ -12,24 +12,21 @@ import org.apache.commons.lang.StringUtils;
 public class TokenUtil {
 
 	/**
-	 * 生成Token， A(hashcode>0)|B + |name的Hash值| +_+size的值 +_+num
+	 * 生成Token， A(hashcode>0)|B + |name的Hash值| +_+size的值
 	 * @param name
 	 * @param size
 	 * @param num
 	 * @return
 	 * @throws Exception
 	 */
-	public static String generateToken(String name, String size, String num)
+	public static String generateToken(String name, String size)
 			throws IOException {
 		if (name == null || size == null){
 			return "";
 		}
-		if (StringUtils.isBlank(num)){
-			return "";
-		}
 		int code = name.hashCode();
 		try {
-			String token = (code > 0 ? "A" : "B") + Math.abs(code) + "_" + size.trim()+"_"+num;
+			String token = (code > 0 ? "A" : "B") + Math.abs(code) + "_" + size.trim();
 			/** TODO: store your token, here just create a file */
 			IoUtil.storeToken(token);
 			

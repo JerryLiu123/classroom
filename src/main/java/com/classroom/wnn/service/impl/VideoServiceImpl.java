@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.classroom.wnn.dao.BiVideoInfoMapper;
+import com.classroom.wnn.dao.BiZoneInfoMapper;
 import com.classroom.wnn.model.BiVideoInfo;
+import com.classroom.wnn.model.BiZoneInfo;
 import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.util.Convert;
@@ -25,60 +27,78 @@ public class VideoServiceImpl implements VideoService {
 	@Autowired
 	private BiVideoInfoMapper videoMapper;
 	@Autowired
+	private BiZoneInfoMapper zoneMapper;
+	@Autowired
 	private RedisService redisService;
 	
+
 	@Override
-	public int insertVider(BiVideoInfo info) {
+	public int insertVideo(BiVideoInfo info) {
 		// TODO Auto-generated method stub
 		return videoMapper.insertReturnKey(info);
+	}
+	
+
+	@Override
+	public int updateVideo(BiVideoInfo info) {
+		// TODO Auto-generated method stub
+		return videoMapper.updateByPrimaryKeySelective(info);
+	}
+	
+	@Override
+	public int insertZoneVider(BiZoneInfo info) {
+		// TODO Auto-generated method stub
+		return zoneMapper.insertReturnKey(info);
 	}
 
 	@Override
 	public int updateHDFSFile(String key, String path) {
 		// TODO Auto-generated method stub
-		BiVideoInfo info = new BiVideoInfo();
+		BiZoneInfo info = new BiZoneInfo();
 		info.setId(Integer.parseInt(key));
-		info.setvHdfsfile(path);
-		return videoMapper.updateByPrimaryKeySelective(info);
+		info.setzHdfsfile(path);
+		return zoneMapper.updateByPrimaryKeySelective(info);
 	}
 
-	@Override
-	public BiVideoInfo getVideoById(Integer id) {
-		// TODO Auto-generated method stub
-		return videoMapper.selectByPrimaryKey(id);
-	}
+//	@Override
+//	public BiVideoInfo getVideoById(Integer id) {
+//		// TODO Auto-generated method stub
+//		return videoMapper.selectByPrimaryKey(id);
+//	}
 
 	@Override
 	@Transactional
-	public List<BiVideoInfo> delIsHDFSIsLocal() {
+	public List<BiZoneInfo> delIsHDFSIsLocal() {
 		// TODO Auto-generated method stub
-		List<BiVideoInfo> infos = videoMapper.selectUpdateHDFS();
-		List<BiVideoInfo> upInfos = new ArrayList<BiVideoInfo>();
+		List<BiZoneInfo> infos = zoneMapper.selectUpdateHDFS();
+		List<BiZoneInfo> upInfos = new ArrayList<BiZoneInfo>();
 		List<String> fileNames = new ArrayList<String>();
-		for(BiVideoInfo info : infos){
-			if(!redisService.exists("FileUser"+info.getvFile())){//如果不存在此锁，代表文件没有被占用，可以删除
-				/*
-				 * 到了这一步说明此文件有hdfs地址，所以文件不可能再被使用本地地址播放
-				 * */
-				File f = new File(info.getvFile());
-				if(!f.getParentFile().exists()){//如果目录不存在则直接更新数据库信息,将本地文件目录设为0
-					info.setvFile("0");
-				}else if(!f.exists()){//如果目录不为空，但是找不到文件的话，也直接更新数据库信息
-					info.setvFile("0");
-				}else{//代表找到文件
-					fileNames.add(info.getvFile());
-					info.setvFile("0");
+		if(infos != null && infos.size() > 0){
+			for(BiZoneInfo info : infos){
+				if(!redisService.exists("FileUser"+info.getzFile())){//如果不存在此锁，代表文件没有被占用，可以删除
+					/*
+					 * 到了这一步说明此文件有hdfs地址，所以文件不可能再被使用本地地址播放
+					 * */
+					File f = new File(info.getzFile());
+					if(!f.getParentFile().exists()){//如果目录不存在则直接更新数据库信息,将本地文件目录设为0
+						info.setzFile("0");
+					}else if(!f.exists()){//如果目录不为空，但是找不到文件的话，也直接更新数据库信息
+						info.setzFile("0");
+					}else{//代表找到文件
+						fileNames.add(info.getzFile());
+						info.setzFile("0");
+					}
+					upInfos.add(info);
 				}
-				upInfos.add(info);
+			}
+			//先更新数据库信息，再删除文件
+			zoneMapper.updateBatch(upInfos);
+			for(String fileName : fileNames){
+				File f = new File(fileName);
+				f.delete();
 			}
 		}
-		//先更新数据库信息，再删除文件
-		videoMapper.updateBatch(upInfos);
-		for(String fileName : fileNames){
-			File f = new File(fileName);
-			f.delete();
-		}
-		return null;
+		return upInfos;
 	}
 
 	@Override
@@ -97,16 +117,15 @@ public class VideoServiceImpl implements VideoService {
 		HdfsFileSystem.createFile(inputFile, path);
 		/*将新的地址目录写入 视频信息表 */
 		logger.info("更新视频信息表开始");
-		BiVideoInfo info = new BiVideoInfo();
+		BiZoneInfo info = new BiZoneInfo();
 		info.setId(Integer.parseInt(infoKey));
-		info.setvHdfsfile(path);
-		info.setvFile("0");
-		videoMapper.updateByPrimaryKeySelective(info);
+		info.setzHdfsfile(path);
+		info.setzFile("0");
+		zoneMapper.updateByPrimaryKeySelective(info);
 		logger.info("更新视频信息表成功");
 		//删除本地文件
 		if(!redisService.exists("FileUser"+inputFile.toString())){//如果不存在此锁，代表文件没有被占用，可以删除
 			inputFile.delete();
 		}
 	}
-
 }

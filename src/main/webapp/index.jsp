@@ -93,10 +93,10 @@
 		filesQueueId : "i_stream_files_queue", /** 文件上传进度显示框ID，非自定义UI有效(customered:false) */
 		filesQueueHeight : 450, /** 文件上传进度显示框的高，非自定义UI有效(customered:false)，默认450px */
 		messagerId : "i_stream_message_container", /** 消息框的Id，当没有自定义onXXX函数，系统会显示onXXX的部分提示信息，如果没有i_stream_message_container则不显示 */
-		postVarsPerFile : { /** 上传文件时传入的参数，默认: {} */
-			param1: "val1",
-			param2: "val2"
-		},
+// 		postVarsPerFile : { /** 上传文件时传入的参数，默认: {} */
+//			num: "${success}",
+//			param2: "val2"
+//		},
 //		frmUploadURL : "http://customers.duapp.com/fd;", /** Flash上传的URI */
 		tokenURL : "${ap }/tk",
       	uploadURL : "${ap }/upload",

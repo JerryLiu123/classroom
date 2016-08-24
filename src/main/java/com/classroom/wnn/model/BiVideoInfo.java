@@ -5,13 +5,11 @@ public class BiVideoInfo {
 
     private String vName;
 
-    private String vHdfsfile;
-
-    private String vFile;
-
     private Integer vAvailable;
 
     private Integer vIsdel;
+
+    private Integer cClassid;
 
     public Integer getId() {
         return id;
@@ -29,22 +27,6 @@ public class BiVideoInfo {
         this.vName = vName == null ? null : vName.trim();
     }
 
-    public String getvHdfsfile() {
-        return vHdfsfile;
-    }
-
-    public void setvHdfsfile(String vHdfsfile) {
-        this.vHdfsfile = vHdfsfile == null ? null : vHdfsfile.trim();
-    }
-
-    public String getvFile() {
-        return vFile;
-    }
-
-    public void setvFile(String vFile) {
-        this.vFile = vFile == null ? null : vFile.trim();
-    }
-
     public Integer getvAvailable() {
         return vAvailable;
     }
@@ -59,5 +41,13 @@ public class BiVideoInfo {
 
     public void setvIsdel(Integer vIsdel) {
         this.vIsdel = vIsdel;
+    }
+
+    public Integer getcClassid() {
+        return cClassid;
+    }
+
+    public void setcClassid(Integer cClassid) {
+        this.cClassid = cClassid;
     }
 }
