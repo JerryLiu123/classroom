@@ -27,7 +27,7 @@ import com.classroom.wnn.util.constants.Constants;
 import com.classroom.wnn.util.lock.RedisLockUtil;
 
 /**
- * hdfs 文件操作
+ * hdfs 文件操作,正在想怎么使用链接池~
  * @author lgh
  *
  */

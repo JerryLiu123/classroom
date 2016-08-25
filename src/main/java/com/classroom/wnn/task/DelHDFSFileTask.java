@@ -8,6 +8,11 @@ import org.apache.log4j.Logger;
 import com.classroom.wnn.util.HdfsFileSystem;
 import com.classroom.wnn.util.SpringContextHelper;
 
+/**
+ * 删除hdfs文件task
+ * @author lgh
+ *
+ */
 public class DelHDFSFileTask extends Task{
 	private static Logger logger = Logger.getLogger(DelHDFSFileTask.class);
 	private String path;

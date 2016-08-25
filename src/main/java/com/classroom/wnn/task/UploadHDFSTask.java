@@ -11,6 +11,11 @@ import com.classroom.wnn.util.HdfsFileSystem;
 import com.classroom.wnn.util.SpringContextHelper;
 import com.classroom.wnn.util.constants.Constants;
 
+/**
+ * 上传文件到hdfs
+ * @author lgh
+ *
+ */
 public class UploadHDFSTask extends Task {
 	private static Logger logger = Logger.getLogger(UploadHDFSTask.class);
 

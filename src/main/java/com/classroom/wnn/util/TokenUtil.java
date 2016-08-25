@@ -5,9 +5,9 @@ import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Key Util: 1> according file name|size ..., generate a key;
- * 			 2> the key should be unique.
- * 文件名转码
+ * 用于生成上传问价的token
+ * @author lgh
+ *
  */
 public class TokenUtil {
 

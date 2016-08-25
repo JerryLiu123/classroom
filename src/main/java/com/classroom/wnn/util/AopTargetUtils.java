@@ -6,17 +6,11 @@ import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.support.AopUtils;
 
-/********************************************
- * AopTargetUtils.java<br>
- * 类详细描述……<br>
- * AOP工具类
- * CreateDate: 2015年4月2日<br>
- * Copyright: Copyright(c) 2015年4月2日<br>
- * Company: X315<br>
- * @since v1.0.0
- * @author  x04
- * @version v1.0.0
- *********************************************/
+/**
+ * aop工具类
+ * @author xiaoBei
+ *
+ */
 public class AopTargetUtils { 
 	/**
 	 * 获取 目标对象

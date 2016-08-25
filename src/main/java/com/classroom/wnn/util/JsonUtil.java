@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * 功能描述： 处理json的工具类，负责json数据转换成java对象和java对象转换成json<br>
+ *  处理json的工具类，负责json数据转换成java对象和java对象转换成json
  */
 
 public class JsonUtil {

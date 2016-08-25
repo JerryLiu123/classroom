@@ -8,6 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.classroom.wnn.service.RedisService;
 
+/**
+ * redis 分布式锁，不是很完善
+ * @author lgh
+ *
+ */
 public class RedisLockUtil {
 
 	@Autowired

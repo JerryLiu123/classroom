@@ -5,15 +5,7 @@ import java.math.BigDecimal;
 
 public class UserInfo implements Serializable {
 
-	/********************************************
-	 * UserInfo.java<br>
-	 * 字段详细描述……<br>
-	 * @since v1.0.0
-	 * <br>
-	 * --------------------------------------<br>
-	 * 编辑历史<br>
-	 * 2015年3月7日::x07::创建此字段<br>
-	 *********************************************/
+
 	private static final long serialVersionUID = 1L;
 	private Integer id;
 	// 邮箱

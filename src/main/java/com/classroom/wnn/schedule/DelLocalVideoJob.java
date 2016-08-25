@@ -11,7 +11,7 @@ import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.service.VideoService;
 
 /**
- * 因暂时无法解决分布式系统下找不到文件的问题，暂时弃用
+ * 定时删除本地磁盘中已上传的视频文件
  * @author lgh
  */
 public class DelLocalVideoJob extends IJob implements org.quartz.StatefulJob{

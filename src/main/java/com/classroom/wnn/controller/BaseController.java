@@ -23,17 +23,10 @@ public class BaseController {
 	private static String resource_version = "";
 	
 	/**
-	 * ******************************************
-	 * getBaseMap<br>
-	 * 向map中添加基础数据<br>
-	 * @since v1.0.0
-	 * @param 参数名 参数类型 参数描述
-	 * @return 返回类型 返回类型描述
-	 * <br>
-	 * --------------------------------------<br>
-	 * 编辑历史<br>
-	 * 2015年9月22日::x06::创建此方法<br>
-	 ********************************************
+	 * 向map中添加基础数据
+	 * @param map
+	 * @return
+	 * @author lgh
 	 */
 	protected Map<String, Object> getBaseMap(Map<String, Object> map) {
 		// 程序目录
@@ -52,17 +45,11 @@ public class BaseController {
 	}
 	
 	/**
-	 * ******************************************
-	 * getUserMap<br>
-	 * 获取带有用户信息的map，包含getBaseMap的基本信息，用户未登录时将检测cookie<br>
-	 * @since v1.0.0
-	 * @param 参数名 参数类型 参数描述
-	 * @return 返回类型 返回类型描述
-	 * <br>
-	 * --------------------------------------<br>
-	 * 编辑历史<br>
-	 * 2015年9月22日::x06::创建此方法<br>
-	 ********************************************
+	 * 获得用户的基础数据，包含baseMap中的信息
+	 * @param map
+	 * @param request
+	 * @return
+	 * @author lgh
 	 */
 	@SuppressWarnings("unused")
 	protected Map<String, Object> getUserMap(Map<String, Object> map, HttpServletRequest request) {
@@ -147,17 +134,10 @@ public class BaseController {
 	}
 	
 	/**
-	 * ******************************************
-	 * refreshUserInfo<br>
-	 * 刷新session中的用户信息，user为空时将移除session中的用户信息<br>
-	 * @since v1.0.0
-	 * @param 参数名 参数类型 参数描述
-	 * @return 返回类型 返回类型描述
-	 * <br>
-	 * --------------------------------------<br>
-	 * 编辑历史<br>
-	 * 2015年9月22日::x06::创建此方法<br>
-	 ********************************************
+	 * 刷新session中的用户信息，user为空时将移除session中的用户信息
+	 * @param request
+	 * @param user
+	 * 
 	 */
 	protected void refreshUserInfo(HttpServletRequest request, UserBean user) {
 		SysParamerters.setUserInfo(request, user);

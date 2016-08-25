@@ -20,7 +20,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import com.classroom.wnn.util.lock.RedisLockUtil;
 
-//InitializingBean 接口为初始化时使用
+/**
+ * 初始化redis任务队列
+ * @author lgh
+ *
+ */
 public class RedisThreadPool implements InitializingBean{
 	private static Logger logger = Logger.getLogger(RedisThreadPool.class);
 	

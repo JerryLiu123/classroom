@@ -16,7 +16,7 @@ import com.classroom.wnn.util.constants.Constants;
 
 /**
  * 
- * 功能描述：验证类 ，提供常用的转型 <br>
+ * 功能描述：验证类 ，提供常用的转型
  */
 public class Validation {
 

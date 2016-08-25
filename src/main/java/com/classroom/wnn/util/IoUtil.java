@@ -18,7 +18,8 @@ import com.classroom.wnn.util.constants.Constants;
 
 
 /**
- * IO--closing, getting file name ... main function method
+ * IO 操作，网上找的~~~
+ *
  */
 public class IoUtil {
 	static final Pattern RANGE_PATTERN = Pattern.compile("bytes \\d+-\\d+/\\d+");
