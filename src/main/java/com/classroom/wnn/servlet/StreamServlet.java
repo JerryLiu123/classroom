@@ -37,6 +37,7 @@ import com.classroom.wnn.util.constants.Constants;
 
 
 /**
+ * 这种切分的办法是错误的 2016年9月1日
  * 必须使用jdk1.7及以上
  * 文件上传
  * part, stored it.
