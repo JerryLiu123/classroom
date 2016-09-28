@@ -120,7 +120,7 @@
 		<groupId>org.springframework.batch</groupId>
 		<artifactId>spring-batch-infrastructure</artifactId>
 		<version>2.2.2.RELEASE</version>
-		<scope>provided</scope>
+		<!-- <scope>provided</scope> -->
 	</dependency>
 
 	<dependency>
@@ -154,6 +154,7 @@
 		<groupId>commons-pool</groupId>
 		<artifactId>commons-pool</artifactId>
 		<version>1.6</version>
+		<!-- <scope>provided</scope> -->
 	</dependency>
 <!-- 	<dependency>
 		<groupId>commons-lang</groupId>
@@ -200,6 +201,7 @@
         <groupId>redis.clients</groupId>
         <artifactId>jedis</artifactId>
         <version>2.6.2</version>
+        <scope>provided</scope>
     </dependency>
     <!-- hadoop -->
 	<dependency>

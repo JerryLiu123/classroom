@@ -120,10 +120,26 @@ public class HdfsFileSystem{
         InputStream in = null;  
         try {  
         	logger.info("在hdfs上建立文件----开始:" + path);
+            in = new BufferedInputStream(new FileInputStream(localPath));//获得输入流
+            createInput(in, path);
+            logger.info("在hdfs上建立文件----结束:" + path);
+        } finally {  
+            IOUtils.closeStream(in);  
+        }  
+    }
+    /**
+     * 输入流上传到hdfs（未测试） 
+     * @param localPath
+     * @param hdfsPath
+     * @throws IOException
+     */
+    public static void createInput(InputStream in, String path) throws IOException {  
+        try {  
+        	logger.info("在hdfs上建立文件----开始:" + path);
             Configuration conf = new Configuration();  
             FileSystem fileSystem = FileSystem.get(URI.create(path), conf);//初始化连接信息,初始化的时候慢，但是还不能用连接池，因为初始化信息都是不同的
             FSDataOutputStream out = fileSystem.create(new Path(path));//建立文件  
-            in = new BufferedInputStream(new FileInputStream(localPath));//获得输入流
+            //in = new BufferedInputStream(new FileInputStream(localPath));//获得输入流
             IOUtils.copyBytes(in, out, 4096, false);//写入文件
             out.hsync();  
             out.close();  
@@ -167,33 +183,30 @@ public class HdfsFileSystem{
      * 读取hdfs中的文件内容 
      * 不可用
      */  
-//    public static String readFileFromHdfs(String path) { 
-//    	StringBuffer value = new StringBuffer();
-//        try {  
-//        	if(!(checkFileExist(path))){
-//        		throw new NullPointerException();
-//        	}
-//            Path f = new Path(path);  
-//            FSDataInputStream dis = fs.open(f);  
-//            InputStreamReader isr = new InputStreamReader(dis, "utf-8");  
-//            BufferedReader br = new BufferedReader(isr);  
-//            String str = null; 
-//            while ((str = br.readLine()) != null) {  
-//                System.out.println("==="+str); 
-//                value.append(str);
-//            }  
-//            br.close();  
-//            isr.close();  
-//            dis.close();  
-//        } catch (Exception e) {  
-//            e.printStackTrace();  
-//        }
-//        return value.toString();
-//    }
-    
-    private void ma() {
-		// TODO Auto-generated method stub
-
-	}
+    public static String readFileFromHdfs(String path) { 
+    	StringBuffer value = new StringBuffer();
+        try {  
+        	if(!(checkFileExist(path))){
+        		throw new NullPointerException();
+        	}
+	        Configuration conf = new Configuration(); 
+			FileSystem fileSystem = FileSystem.get(URI.create(path), conf);
+            Path f = new Path(path);  
+            FSDataInputStream dis = fileSystem.open(f);  
+            InputStreamReader isr = new InputStreamReader(dis, "utf-8");  
+            BufferedReader br = new BufferedReader(isr);  
+            String str = null; 
+            while ((str = br.readLine()) != null) {  
+                System.out.println("==="+str); 
+                value.append(str);
+            }  
+            br.close();  
+            isr.close();  
+            dis.close();  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }
+        return value.toString();
+    }
 
 }

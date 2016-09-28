@@ -44,7 +44,6 @@ import com.classroom.wnn.util.constants.Constants;
  * 会先调用 doGet 方法进行信息初始化
  * 然后将要上传的数据进行分片，并多次调用 doPost方法进行上传
  * 实现分块存储，可以在存储到hdfs的时候选择不同的namenode，以减轻hdfs压力，以及播放的时候选择减轻压力（因为实在搞不定前端~所以讲分块信息保存到了redis中，最好能保存到req中）
- * 正在验证，到底是所有的分片上传完成之后再插入数据库（如果分片多了会造成数据库和hdfs压力太大）还是边分片边上传（当用户删除上传时比较麻烦）
  * @author java_speed
  * 修改时间 2016年8月18日
  * 修改人 lgh
@@ -168,7 +167,6 @@ public class StreamServlet extends HttpServlet {
 			}
 			/*
 			 * 以输出流的方式写入文件
-			 * 主要是hdfs不支持同一个文件多次写入啊！！！
 			 * */
 			out = new FileOutputStream(f, true);
 			content = req.getInputStream();
