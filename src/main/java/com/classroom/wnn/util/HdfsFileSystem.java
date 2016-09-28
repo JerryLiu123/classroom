@@ -190,6 +190,8 @@ public class HdfsFileSystem{
         		throw new NullPointerException();
         	}
 	        Configuration conf = new Configuration(); 
+	        conf.set("mapreduce.framework.name", "yarn");
+	        conf.set("yarn.resourcemanager.address", "192.169.56.1:8032");
 			FileSystem fileSystem = FileSystem.get(URI.create(path), conf);
             Path f = new Path(path);  
             FSDataInputStream dis = fileSystem.open(f);  
@@ -208,5 +210,16 @@ public class HdfsFileSystem{
         }
         return value.toString();
     }
+    
+    
+    public static void main(String[] args) {
+//    	try {
+//			listDataNodeInfo();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+    	readFileFromHdfs("hdfs://xiaoBei:9000/mytest/wordcount/part-r-00000");
+	}
 
 }

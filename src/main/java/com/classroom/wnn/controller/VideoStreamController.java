@@ -79,7 +79,7 @@ public class VideoStreamController extends BaseController{
 					
 					String range=req.getHeader("Range");
 					if(range.equals("bytes=0-")){//如果是第一次播放，才加入使用者
-						FileUserAdd(filename);
+						fileUserAdd(filename);
 					}
 					playLocal(filename, req, resp);
 				}
@@ -106,7 +106,7 @@ public class VideoStreamController extends BaseController{
 			Pattern pattern = Pattern.compile("^hdfs.*");
 			Matcher matcher = pattern.matcher(filename);
 			if(!matcher.matches()){//如果是本地文件则进行使用量减一
-				FileUserDel(filename);
+				fileUserDel(filename);
 			}
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
@@ -211,7 +211,7 @@ public class VideoStreamController extends BaseController{
 	 * 将本地文件使用者数量加一并返回
 	 * @throws TimeoutException 
 	 */
-	private String FileUserAdd(String filename) throws TimeoutException{
+	private String fileUserAdd(String filename) throws TimeoutException{
 		String value = redisLockUtil.addLock("FileUser"+filename, Long.valueOf(3*60*1000));
 		String out = null;
 		try {
@@ -234,7 +234,7 @@ public class VideoStreamController extends BaseController{
 	 * 将本地文件使用者数量减一，如果已经为最后一个使用者，则删除此锁
 	 * @throws TimeoutException 
 	 */
-	private void FileUserDel(String filename) throws TimeoutException{
+	private void fileUserDel(String filename) throws TimeoutException{
 		String value = redisLockUtil.addLock("FileUser"+filename, Long.valueOf(3*60*1000));
 		try {
 			if(redisService.exists(filename)){//如果存在使用者，则将使用数量减一

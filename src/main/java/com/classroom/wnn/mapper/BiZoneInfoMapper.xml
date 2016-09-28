@@ -155,7 +155,7 @@
   </select>
   
   <update id="updateBatch" parameterType="list">
-  update into bi_videoinfo
+  update bi_zoneinfo
     <trim prefix="set" suffixOverrides=",">
       <trim prefix="v_fileid =case" suffix="end,">
         <foreach collection="list" item="i" index="index">

@@ -88,6 +88,7 @@ public class VideoServiceImpl implements VideoService {
 						fileNames.add(info.getzFile());
 						info.setzFile("0");
 					}
+					info.setzHdfsfile(null);
 					upInfos.add(info);
 				}
 			}

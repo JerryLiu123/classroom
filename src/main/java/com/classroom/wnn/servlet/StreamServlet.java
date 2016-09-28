@@ -53,7 +53,7 @@ public class StreamServlet extends HttpServlet {
 	private static Logger logger = Logger.getLogger(StreamServlet.class);
 	
 	static final int BUFFER_LENGTH = 10240;
-	static final long ZONE_SIZE = 50 * 1024 * 1024;//50M
+	static final long ZONE_SIZE = 5 * 1024 * 1024 * 1024;//设置为 50G,及不让其分片
 	static final String START_FIELD = "start";
 	public static final String CONTENT_RANGE_HEADER = "content-range";
 	private static final String UPLOAD_ZONE_KEY = "upload-zone-key";
@@ -140,7 +140,7 @@ public class StreamServlet extends HttpServlet {
 		req.setCharacterEncoding("UTF-8");//解决乱码问题		
 		doOptions(req, resp);
 		final String token = req.getParameter(Constants.TOKEN_FIELD);
-		//final String fileName = new String(req.getParameter(Constants.FILE_NAME_FIELD).getBytes("ISO-8859-1"), "UTF-8");
+		final String fileName = new String(req.getParameter(Constants.FILE_NAME_FIELD).getBytes("ISO-8859-1"), "UTF-8");
 		Range range = IoUtil.parseRange(req);
 		OutputStream out = null;
 		InputStream content = null;
@@ -193,30 +193,39 @@ public class StreamServlet extends HttpServlet {
 			try {
 				
 				//start 当前传递的大小
-				if(f.length() >= ZONE_SIZE && range.getSize() != start){//已达到分片大小，但是总上传未完成
-					System.out.println("文件达到分片大小");
-					Integer nextNum = getNextNum(token);
-					rename(f, token,nextNum);//重命名文件
-					redisService.set(UPLOAD_ZONE_KEY+"-num-"+token, String.valueOf(nextNum));//将下个num存储
-					redisService.set(UPLOAD_ZONE_KEY+"-start-"+token, String.valueOf(start));//将分片大小存储
-				}else if (f.length() >= ZONE_SIZE && range.getSize() == start) {//达到分片大小，并且总上传已经完成,
-					rename(f, token, getNextNum(token));
+//				if(f.length() >= ZONE_SIZE && range.getSize() != start){//已达到分片大小，但是总上传未完成
+//					System.out.println("文件达到分片大小");
+//					Integer nextNum = getNextNum(token);
+//					rename(f, token,nextNum);//重命名文件
+//					redisService.set(UPLOAD_ZONE_KEY+"-num-"+token, String.valueOf(nextNum));//将下个num存储
+//					redisService.set(UPLOAD_ZONE_KEY+"-start-"+token, String.valueOf(start));//将分片大小存储
+//				}else if (f.length() >= ZONE_SIZE && range.getSize() == start) {//达到分片大小，并且总上传已经完成,
+//					rename(f, token, getNextNum(token));
+//					//将数据库中的文件信息标记为上传完成
+//					BiVideoInfo dto = new BiVideoInfo();
+//					dto.setId(Integer.parseInt(redisService.get("file_upload_id"+token)));
+//					dto.setvAvailable(1);
+//					videoService.updateVideo(dto);
+//					redisService.del(new String[]{UPLOAD_ZONE_KEY+"-num-"+token, UPLOAD_ZONE_KEY+"-start-"+token, "file_upload_id"+token});//删除reids中的key
+//				}else if(f.length() < ZONE_SIZE && range.getSize() == start){//未达到分片大小，但总上传已经完成
+//					rename(f, token, getNextNum(token));
+//					//将数据库中的文件信息标记为上传完成
+//					BiVideoInfo dto = new BiVideoInfo();
+//					dto.setId(Integer.parseInt(redisService.get("file_upload_id"+token)));
+//					dto.setvAvailable(1);
+//					videoService.updateVideo(dto);
+//					redisService.del(new String[]{UPLOAD_ZONE_KEY+"-num-"+token, UPLOAD_ZONE_KEY+"-start-"+token, "file_upload_id"+token});//删除reids中的key
+//				}else if(f.length() < ZONE_SIZE && range.getSize() != start){//未达到分片大小，总上传未完成
+//					
+//				}
+				if(range.getSize() == start){//未达到分片大小，但总上传已经完成
+					rename(f, token, getNextNum(token), fileName.substring(fileName.lastIndexOf(".")));
 					//将数据库中的文件信息标记为上传完成
 					BiVideoInfo dto = new BiVideoInfo();
 					dto.setId(Integer.parseInt(redisService.get("file_upload_id"+token)));
 					dto.setvAvailable(1);
 					videoService.updateVideo(dto);
 					redisService.del(new String[]{UPLOAD_ZONE_KEY+"-num-"+token, UPLOAD_ZONE_KEY+"-start-"+token, "file_upload_id"+token});//删除reids中的key
-				}else if(f.length() < ZONE_SIZE && range.getSize() == start){//未达到分片大小，但总上传已经完成
-					rename(f, token, getNextNum(token));
-					//将数据库中的文件信息标记为上传完成
-					BiVideoInfo dto = new BiVideoInfo();
-					dto.setId(Integer.parseInt(redisService.get("file_upload_id"+token)));
-					dto.setvAvailable(1);
-					videoService.updateVideo(dto);
-					redisService.del(new String[]{UPLOAD_ZONE_KEY+"-num-"+token, UPLOAD_ZONE_KEY+"-start-"+token, "file_upload_id"+token});//删除reids中的key
-				}else if(f.length() < ZONE_SIZE && range.getSize() != start){//未达到分片大小，总上传未完成
-					
 				}
 			} catch (IOException e) {
 				success = false;
@@ -255,9 +264,9 @@ public class StreamServlet extends HttpServlet {
 		super.destroy();
 	}
 	
-	private boolean rename(File f, String fileName, Integer num) throws Exception{
+	private boolean rename(File f, String fileName, Integer num, String fileType) throws Exception{
 		boolean flag = true;
-		String zone_fileName = fileName+"_"+num;
+		String zone_fileName = fileName+"_"+num+fileType;
 		IoUtil.getFile(zone_fileName).delete();
 	
 		Files.move(f.toPath(), f.toPath().resolveSibling(zone_fileName));
@@ -276,8 +285,8 @@ public class StreamServlet extends HttpServlet {
 		info.setvFileid(id);
 		info.setzFile(IoUtil.getFile(zone_fileName).toString());
 		videoService.insertZoneVider(info);
-//		UploadHDFSTask hdfsTask = new UploadHDFSTask(contextHelper, IoUtil.getFile(zone_fileName), zone_fileName, String.valueOf(info.getId()));
-//		redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(hdfsTask));
+		UploadHDFSTask hdfsTask = new UploadHDFSTask(contextHelper, IoUtil.getFile(zone_fileName), zone_fileName, String.valueOf(info.getId()));
+		redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(hdfsTask));
 		return flag;
 	}
 	
