@@ -7,10 +7,10 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>classroom</name>
   <url>http://maven.apache.org</url> 
-  <properties> 
+  <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<!-- <springframework.version>4.0.5.RELEASE</springframework.version> -->
-	<aspectj>1.8.6</aspectj>
+	<springframework.version>4.2.3.RELEASE</springframework.version>
+	<aspectj>1.8.6</aspectj> 
   </properties>
   
   <dependencies>
@@ -24,43 +24,43 @@
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-context</artifactId>
-		<version>3.2.0.RELEASE</version>
+		<version>${springframework.version}</version>
 	</dependency>
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-context-support</artifactId>
-		<version>3.2.0.RELEASE</version>
+		<version>${springframework.version}</version>
 	</dependency>
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-webmvc</artifactId>
-		<version>3.2.0.RELEASE</version>
+		<version>${springframework.version}</version>
 	</dependency>
 		<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-tx</artifactId>
-		<version>3.2.0.RELEASE</version>
+		<version>${springframework.version}</version>
 	</dependency>
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-web</artifactId>
-		<version>3.2.0.RELEASE</version>
+		<version>${springframework.version}</version>
 	</dependency>
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-core</artifactId>
-		<version>3.2.0.RELEASE</version>
+		<version>${springframework.version}</version>
 	</dependency>
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-test</artifactId>
-		<version>3.2.0.RELEASE</version>
+		<version>${springframework.version}</version>
 	</dependency>
 	<!-- spring aop -->
  	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-aop</artifactId>
-		<version>3.2.0.RELEASE</version>
+		<version>${springframework.version}</version>
 	</dependency>
 	<dependency>
 		<groupId>org.aspectj</groupId>
@@ -94,12 +94,6 @@
 		<artifactId>slf4j-api</artifactId>
 		<version>1.6.1</version>
 	</dependency>
-<!-- 	<dependency>
-		<groupId>org.slf4j</groupId>
-		<artifactId>slf4j-log4j12</artifactId>
-		<version>1.6.1</version>
-	</dependency> -->
-
  	<dependency>
 		<groupId>org.mybatis</groupId>
 		<artifactId>mybatis</artifactId>
@@ -110,11 +104,10 @@
 		<artifactId>mybatis-spring</artifactId>
 		<version>1.2.2</version>
 	</dependency>
-
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-jdbc</artifactId>
-		<version>3.2.0.RELEASE</version>
+		<version>${springframework.version}</version>
 	</dependency>
  	<dependency>
 		<groupId>org.springframework.batch</groupId>
@@ -140,27 +133,12 @@
 		<artifactId>mysql-connector-java</artifactId>
 		<version>5.1.31</version>
 	</dependency>
-<!--    	<dependency>
-		<groupId>commons-collections</groupId>
-		<artifactId>commons-collections</artifactId>
-		<version>3.2.1</version>
-	</dependency> -->
-<!-- 	<dependency>
-		<groupId>commons-dbcp</groupId>
-		<artifactId>commons-dbcp</artifactId>
-		<version>1.4</version>
-	</dependency> -->
 	<dependency> 
 		<groupId>commons-pool</groupId>
 		<artifactId>commons-pool</artifactId>
 		<version>1.6</version>
 		<!-- <scope>provided</scope> -->
 	</dependency>
-<!-- 	<dependency>
-		<groupId>commons-lang</groupId>
-		<artifactId>commons-lang</artifactId>
-		<version>2.4</version>
-	</dependency> -->
 	<dependency>
 		<groupId>commons-fileupload</groupId>
 		<artifactId>commons-fileupload</artifactId>
@@ -176,16 +154,6 @@
 		<artifactId>c3p0</artifactId>
 		<version>0.9.5.1</version>
 	</dependency>
-<!-- 	<dependency>
-		<groupId>org.apache.axis</groupId>
-		<artifactId>axis-jaxrpc</artifactId>
-		<version>1.4</version>
-	</dependency>
-	<dependency>
-		<groupId>org.apache.axis</groupId>
-		<artifactId>axis-saaj</artifactId>
-		<version>1.4</version> 
-	</dependency> -->
 	<dependency>
 		<groupId>javax.servlet</groupId>
 		<artifactId>servlet-api</artifactId>
@@ -235,10 +203,20 @@
 	</dependency>
 	
 	<!-- Jackson JSON Mapper -->
-	<dependency>
+<!-- 	<dependency>
 		<groupId>org.codehaus.jackson</groupId>
 		<artifactId>jackson-mapper-asl</artifactId>
 		<version>1.9.12</version>
+	</dependency> -->
+	<dependency>      
+	    <groupId>com.fasterxml.jackson.core</groupId>
+	    <artifactId>jackson-core</artifactId>
+	    <version>2.7.0</version>
+	</dependency>
+	<dependency>                
+	    <groupId>com.fasterxml.jackson.core</groupId>
+	    <artifactId>jackson-databind</artifactId>
+	    <version>2.7.0</version>
 	</dependency>
 	<dependency>
 		<groupId>net.sf.json-lib</groupId>
@@ -247,11 +225,24 @@
 		<classifier>jdk15</classifier>
 	</dependency>
 	
- 	<dependency>
+  	<dependency>
 		<groupId>org.freemarker</groupId>
 		<artifactId>freemarker</artifactId>
 		<version>2.3.20</version>
 	</dependency>
+	
+	<!-- websocket -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-websocket</artifactId>
+        <version>${springframework.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-messaging</artifactId>
+        <version>${springframework.version}</version>
+    </dependency>  
+    
   </dependencies>
   <build>
     <finalName>classroom</finalName>

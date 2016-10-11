@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -299,4 +300,16 @@ public class Validation {
 	public static Object[] toTime(Object value) {
 		return null;
 	}
+	/**
+	 * 过滤字符串中的脚本
+	 * */
+    public static String formatScript(String contant) {
+        if(StringUtils.isEmpty(contant)) {
+            return contant;
+        }
+        contant = contant.replace("<", "&lt;");
+        contant = contant.replace(">", "&gt;");
+        return contant;
+    }
+	
 }

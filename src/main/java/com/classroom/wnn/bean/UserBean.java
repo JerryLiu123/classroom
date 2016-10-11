@@ -2,8 +2,6 @@ package com.classroom.wnn.bean;
 
 import java.util.Date;
 
-import com.classroom.wnn.model.BaseUserBean;
-
 
 public class UserBean extends BaseUserBean {
 	private static final long serialVersionUID = 1L;

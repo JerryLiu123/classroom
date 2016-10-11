@@ -1,4 +1,4 @@
-package com.classroom.wnn.model;
+package com.classroom.wnn.bean;
 
 import java.io.Serializable;
 

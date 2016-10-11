@@ -29,8 +29,8 @@ import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.task.RedisThreadPool;
 import com.classroom.wnn.task.UploadHDFSTask;
+import com.classroom.wnn.util.Convert;
 import com.classroom.wnn.util.IoUtil;
-import com.classroom.wnn.util.ObjectUtil;
 import com.classroom.wnn.util.SpringContextHelper;
 import com.classroom.wnn.util.TokenUtil;
 import com.classroom.wnn.util.constants.Constants;
@@ -286,7 +286,7 @@ public class StreamServlet extends HttpServlet {
 		info.setzFile(IoUtil.getFile(zone_fileName).toString());
 		videoService.insertZoneVider(info);
 		UploadHDFSTask hdfsTask = new UploadHDFSTask(contextHelper, IoUtil.getFile(zone_fileName), zone_fileName, String.valueOf(info.getId()));
-		redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(hdfsTask));
+		redisThreadPool.pushFromTail(Convert.objectToBytes(hdfsTask));
 		return flag;
 	}
 	
