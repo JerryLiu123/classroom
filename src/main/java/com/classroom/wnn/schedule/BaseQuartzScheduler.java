@@ -51,7 +51,7 @@ public class BaseQuartzScheduler {
 			IJob p = (IJob) AopTargetUtils.getTarget(map_pluMap.get(key));
 			
 			JobDetailFactoryBean rollbackOrderStatus = new JobDetailFactoryBean();
-			//rollbackOrderStatus.setRequestsRecovery(true);
+			rollbackOrderStatus.setRequestsRecovery(true);
 			rollbackOrderStatus.setJobClass(p.getClass());
 			rollbackOrderStatus.setDurability(true);
 			rollbackOrderStatus.setGroup("myGroup");

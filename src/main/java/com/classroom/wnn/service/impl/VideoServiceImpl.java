@@ -98,6 +98,8 @@ public class VideoServiceImpl implements VideoService {
 				File f = new File(fileName);
 				f.delete();
 			}
+		}else{
+			logger.info("----没有找到可清理的任务----");
 		}
 		return upInfos;
 	}

@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="ISO-8859-1"%>
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -8,19 +8,17 @@
 <title>Insert title here</title>
 </head>
 <body>
-        <div id="roomRemark"></div>     
-        <div style="position:relative;width:40%;height:80%;overflow:auto;display:none;margin-left:5px;"  id="chatMsg"></div>
-        <div style="position:relative;width:40%;height:20%;overflow:auto;display:none;margin-left:5px;"  id="chatSendMsg">
+        <div style="width:200px;height:200px;" id="chatMsg">
+        </div>
+        <div id="chatSendMsg">
         	<textarea rows="10" cols="10" id="chatmsgtext" name="chatmsgtext"></textarea>
-        	<button onclick="sendMessage('111')"></button>
+        	<button onclick="sendMessage('111')">提交</button>
         </div>
 </body>
 <script src="http://cdn.sockjs.org/sockjs-0.3.min.js" type="text/javascript"></script>
 <script src="${rs }js/stomp.js" type="text/javascript"></script>
+<script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript">
-var roomid="00001";
-var username="11111";
-var deptSortName="aaaaaa";
 var isSysMsg="0";
 
 var stompClient=null;
@@ -30,18 +28,21 @@ $(function(){
 })  
 //connect the server  
 function connect(){  
-    var socket=new SockJS("/webchat");   
+	var roomid="00001";
+	var username="11111";
+	var deptSortName="aaaaaa";
+    var socket=new SockJS("${ap }/webchat");   
     stompClient=Stomp.over(socket);  
-    stompClient.connect('','',function(frame){  
+    stompClient.connect({},function(frame){  
         console.log('Connected: '+frame);  
         //用户聊天订阅   
         //alert("hello: "+frame);  
-        stompClient.subscribe("/userChat/chat"+roomid,function(chat){  
+        stompClient.subscribe("${ap }/userChat/chat"+roomid,function(chat){  
             showChat(JSON.parse(chat.body));  
         });   
             
         //初始化  
-        stompClient.subscribe("/app/initChat/"+roomid,function(initData){  
+        stompClient.subscribe("${ap }/app/initChat/"+roomid,function(initData){  
             //alert("初始化聊天室");      
             console.log(initData);      
             content=JSON.parse(initData.body);  
@@ -86,11 +87,11 @@ function sendMessage(textMsg){
         chatCont="<font color='gray'>"+textMsg+"聊天室</font>";  
     }  
     stompClient.send("/app/userChat",{},JSON.stringify({  
-        'roomid':encodeURIComponent(roomid),  
-        'userName':encodeURIComponent(username),  
-        'deptName':encodeURIComponent(deptSortName),  
+        'roomid':encodeURIComponent("00001"),  
+        'userName':encodeURIComponent("11111"),  
+        'deptName':encodeURIComponent("aaaaaa"),  
         'chatContent':encodeURIComponent(chatCont),     
-        'isSysMsg':encodeURIComponent(isSysMsg)  
+        'isSysMsg':encodeURIComponent("0")  
     }))  
 } 
 </script>

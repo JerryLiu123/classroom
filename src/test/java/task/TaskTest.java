@@ -19,7 +19,6 @@ import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.task.RedisThreadPool;
 import com.classroom.wnn.util.HdfsFileSystem;
-import com.classroom.wnn.util.ObjectUtil;
 import com.classroom.wnn.util.constants.Constants;
 import com.classroom.wnn.util.lock.RedisLockUtil;
 
@@ -123,10 +122,10 @@ public class TaskTest extends BaseTest{
 //
 //		System.err.println("----------所有任务已执行完成----------");
 		
-//		System.err.println("----------quartz开始----------");
-//		System.out.println("开启一个job----"+myWork.srartJob("job_testJob1", "myGroup"));
-//		System.err.println("停止一个job----"+myWork.pauseJob("job_testJob1", "myGroup"));;
-//		System.err.println("----------quartz结束----------");
+		System.err.println("----------quartz开始----------");
+		System.out.println("开启一个job----"+myWork.srartJob("job_testJob1", "myGroup"));
+		//System.err.println("停止一个job----"+myWork.pauseJob("job_testJob1", "myGroup"));;
+		System.err.println("----------quartz结束----------");
 		try {
 //			solrServer.getServer();
 //			

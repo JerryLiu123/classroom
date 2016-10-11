@@ -16,7 +16,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 @Configuration
-@EnableWebMvc
 @EnableWebSocketMessageBroker 
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	private static Logger logger = Logger.getLogger(WebSocketConfig.class);
