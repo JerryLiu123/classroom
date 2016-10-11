@@ -15,6 +15,8 @@
         	<button onclick="sendMessage('111')"></button>
         </div>
 </body>
+<script src="http://cdn.sockjs.org/sockjs-0.3.min.js" type="text/javascript"></script>
+<script src="${rs }js/stomp.js" type="text/javascript"></script>
 <script type="text/javascript">
 var roomid="00001";
 var username="11111";
