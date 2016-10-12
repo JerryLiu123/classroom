@@ -8,18 +8,21 @@
 <title>Insert title here</title>
 </head>
 <body>
-        <div style="width:200px;height:200px;" id="chatMsg">
+        <div style="width:300px;height:500px;" id="chatMsg">
         </div>
         <div id="chatSendMsg">
         	<textarea rows="10" cols="10" id="chatmsgtext" name="chatmsgtext"></textarea>
         	<button onclick="sendMessage('111')">提交</button>
         </div>
 </body>
-<script src="http://cdn.sockjs.org/sockjs-0.3.min.js" type="text/javascript"></script>
+<script src="${rs }js/sockjs-0.3.4.min.js" type="text/javascript"></script>
 <script src="${rs }js/stomp.js" type="text/javascript"></script>
 <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript">
 var isSysMsg="0";
+var roomid="${roomid}";
+var username="11111";
+var deptSortName="aaaaaa";
 
 var stompClient=null;
 var content=null;  
@@ -28,21 +31,18 @@ $(function(){
 })  
 //connect the server  
 function connect(){  
-	var roomid="00001";
-	var username="11111";
-	var deptSortName="aaaaaa";
-    var socket=new SockJS("${ap }/webchat");   
+    var socket=new SockJS("/webchat");   
     stompClient=Stomp.over(socket);  
-    stompClient.connect({},function(frame){  
+    stompClient.connect('','',function(frame){  
         console.log('Connected: '+frame);  
         //用户聊天订阅   
         //alert("hello: "+frame);  
-        stompClient.subscribe("${ap }/userChat/chat"+roomid,function(chat){  
+        stompClient.subscribe("/userChat/chat"+roomid,function(chat){  
             showChat(JSON.parse(chat.body));  
         });   
             
         //初始化  
-        stompClient.subscribe("${ap }/app/initChat/"+roomid,function(initData){  
+        stompClient.subscribe("/app/initChat/"+roomid,function(initData){  
             //alert("初始化聊天室");      
             console.log(initData);      
             content=JSON.parse(initData.body);  
@@ -59,9 +59,8 @@ function connect(){
 }
 //显示聊天信息  
 function showChat(message){   
-     var htmlMsg=decodeURIComponent(message.chatContent);  
-       var userMsg=decodeURIComponent(message.deptName)  
-       				+"--"+decodeURIComponent(message.userName)+"   "+decodeURIComponent(message.curTime)+"</font>";  
+       var htmlMsg=decodeURIComponent(message.chatContent);  
+       var userMsg=decodeURIComponent(message.roomid)+"-"+decodeURIComponent(message.userName)+"-"+decodeURIComponent(message.curTime)+"</font>";  
        htmlMsg=userMsg+"<br/>    "+htmlMsg;    
        if(htmlMsg!="") {  
            if($("#chatMsg").html()!=""){  
@@ -81,13 +80,13 @@ function showChat(message){
 } 
 
 //发送信息
-function sendMessage(textMsg){  
+function sendMessage(isSysMsg,textMsg){  
     var chatCont=document.getElementById("chatmsgtext").value;
     if(isSysMsg=="1"){  
         chatCont="<font color='gray'>"+textMsg+"聊天室</font>";  
     }  
     stompClient.send("/app/userChat",{},JSON.stringify({  
-        'roomid':encodeURIComponent("00001"),  
+        'roomid':encodeURIComponent(roomid),  
         'userName':encodeURIComponent("11111"),  
         'deptName':encodeURIComponent("aaaaaa"),  
         'chatContent':encodeURIComponent(chatCont),     

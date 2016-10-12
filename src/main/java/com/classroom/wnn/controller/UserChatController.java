@@ -17,6 +17,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.classroom.wnn.aop.annotation.Log;
@@ -27,20 +28,20 @@ import com.classroom.wnn.bean.LimitQueue;
 @Controller
 public class UserChatController extends BaseController{
 	private static Logger logger = Logger.getLogger(UserChatController.class);
-	private SimpMessagingTemplate template;
 	
+	
+	private SimpMessagingTemplate template;
 	@Autowired
 	public UserChatController(SimpMessagingTemplate t) {
-		template = t;
+		this.template = t;
 	}
-	
     //消息缓存列表
     private Map<String, Object> msgCache = new HashMap<String, Object>();
 	
 	/**
 	 * WebSocket聊天的相应接收方法和转发方法
 	 * 客户端通过app/userChat调用该方法，并将处理的消息发送客户端订阅的地址
-	 * @param userChat     关于用户聊天的各个信息
+	 * @param chatMessage  关于用户聊天的各个信息
 	 */
 	@MessageMapping("/userChat")
 	public void userChat(ChatMessageBean chatMessage) {
@@ -65,9 +66,9 @@ public class UserChatController extends BaseController{
 
 	
 	@SubscribeMapping("/initChat/{roomid}")
-	public LimitQueue<ChatMessageBean> initChatRoom(@DestinationVariable String roomid) {
-		logger.info("-------新用户进入聊天室------");
-		LimitQueue<ChatMessageBean> chatlist = new LimitQueue<ChatMessageBean>(0);
+	public LimitQueue<ChatMessageBean> initChatRoom(@DestinationVariable("roomid") String roomid) {
+		//logger.info("-------新用户进入聊天室------");
+		LimitQueue<ChatMessageBean> chatlist = new LimitQueue<ChatMessageBean>(5);
 		// 发送用户的聊天记录
 		if (!msgCache.containsKey(roomid)) {
 			// 从来没有人进入聊天空间
@@ -78,11 +79,10 @@ public class UserChatController extends BaseController{
 		return chatlist;
 	}
 	
-	@RequestMapping(value="/touserchat")
-	@Log(name="aaa")
-	public String toUserChat(HttpServletRequest req,HttpServletResponse resp, Map<String, Object> datamap){
+	@RequestMapping(value="/touserchat/{roomid}")
+	public String toUserChat(HttpServletRequest req,HttpServletResponse resp, Map<String, Object> datamap, @PathVariable("roomid") String roomid){
 		datamap = getBaseMap(datamap);
-		datamap.put("name", "1111");
+		datamap.put("roomid", roomid);
 		return "socket";
 	}
 }

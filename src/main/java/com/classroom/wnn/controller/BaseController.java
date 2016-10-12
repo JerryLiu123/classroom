@@ -32,7 +32,7 @@ public class BaseController {
 		// 程序目录
 		map.put("ap", Constants.applicationPath);
 		// 资源目录
-		map.put("rs", Constants.applicationPath+Constants.staticUrl + "/");
+		map.put("rs", Constants.staticUrl + "/");
 		// 主页url
 		map.put("home", Constants.homeUrl);
 

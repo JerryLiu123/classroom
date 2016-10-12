@@ -15,6 +15,7 @@ http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
 
 
 	<context:component-scan base-package="com.classroom.wnn.controller" />
+	<context:component-scan base-package="com.classroom.wnn.util.config" />
 	<mvc:resources mapping="/resources/**" location="/resources/" />
 	
 	<aop:aspectj-autoproxy proxy-target-class="true" />

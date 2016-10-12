@@ -69,7 +69,6 @@
 
 <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
 <script src="http://cdn.bootcss.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/js/stream-v1.js"></script>
 <script type="text/javascript">
 /**
  * 配置文件（如果没有默认字样，说明默认值就是注释下的值）
