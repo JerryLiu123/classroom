@@ -20,8 +20,9 @@
 			  <h1>Stream上传插件 <small>bootstrap style demo</small></h1>
 			</div>
 
-			<div class="dropzone dz-clickable" id="i_stream_dropzone">
-			</div>
+<!-- 			<div class="dropzone dz-clickable" id="i_stream_dropzone">
+			</div> -->
+			<div di="i_stream_message_container"></div>
 
 			<div class="btn-toolbar" role="toolbar">
 				<div class="btn-group">

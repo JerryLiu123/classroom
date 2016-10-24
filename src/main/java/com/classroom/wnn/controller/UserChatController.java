@@ -35,7 +35,7 @@ public class UserChatController extends BaseController{
 	public UserChatController(SimpMessagingTemplate t) {
 		this.template = t;
 	}
-    //消息缓存列表
+    //消息缓存列表，先暂时不用redis 的队列了~
     private Map<String, Object> msgCache = new HashMap<String, Object>();
 	
 	/**

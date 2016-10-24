@@ -25,6 +25,8 @@ public class Constants {
 	/**允许的域**/
 	public static String streamCrossOrigin = "*";
 	public static String streamCrossServer="";
+	/**ffmpeg 路径**/
+	public static String ffmpegPath = "";
 	
 	
 	/**存储用户信息的SESSION名称 **/ 
@@ -164,6 +166,12 @@ public class Constants {
 	}
 	public void setStreamCrossServer(String streamCrossServer) {
 		Constants.streamCrossServer = streamCrossServer;
+	}
+	public String getFfmpegPath() {
+		return ffmpegPath;
+	}
+	public void setFfmpegPath(String ffmpegPath) {
+		Constants.ffmpegPath = ffmpegPath;
 	}
 	
 	

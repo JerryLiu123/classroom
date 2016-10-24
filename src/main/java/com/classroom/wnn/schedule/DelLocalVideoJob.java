@@ -3,6 +3,7 @@ package com.classroom.wnn.schedule;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import com.classroom.wnn.service.VideoService;
  * 定时删除本地磁盘中已上传的视频文件
  * @author lgh
  */
+@DisallowConcurrentExecution
 public class DelLocalVideoJob extends IJob implements org.quartz.StatefulJob{
 
 	private static Logger logger = Logger.getLogger(DelLocalVideoJob.class);

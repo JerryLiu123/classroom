@@ -61,5 +61,6 @@ http://www.springframework.org/schema/context/spring-context-4.2.xsd">
 		<property name="homeUrl" value="${home_url}" />
 		<property name="isTest" value="${is_test}" />
 		<property name="streamFileRepository" value="${stream_file_repository}" />
+		<property name="ffmpegPath" value="${ffmpeg_path}" />
 	</bean>
 </beans>

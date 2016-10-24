@@ -34,6 +34,7 @@ import com.classroom.wnn.util.IoUtil;
 import com.classroom.wnn.util.SpringContextHelper;
 import com.classroom.wnn.util.TokenUtil;
 import com.classroom.wnn.util.constants.Constants;
+import com.classroom.wnn.util.lock.RedisLockUtil;
 
 
 /**
@@ -44,6 +45,8 @@ import com.classroom.wnn.util.constants.Constants;
  * 会先调用 doGet 方法进行信息初始化
  * 然后将要上传的数据进行分片，并多次调用 doPost方法进行上传
  * 实现分块存储，可以在存储到hdfs的时候选择不同的namenode，以减轻hdfs压力，以及播放的时候选择减轻压力（因为实在搞不定前端~所以讲分块信息保存到了redis中，最好能保存到req中）
+ * 
+ * 现在太依赖redis了~~要是redis
  * @author java_speed
  * 修改时间 2016年8月18日
  * 修改人 lgh
@@ -53,7 +56,6 @@ public class StreamServlet extends HttpServlet {
 	private static Logger logger = Logger.getLogger(StreamServlet.class);
 	
 	static final int BUFFER_LENGTH = 10240;
-	static final long ZONE_SIZE = 5 * 1024 * 1024 * 1024;//设置为 50G,及不让其分片
 	static final String START_FIELD = "start";
 	public static final String CONTENT_RANGE_HEADER = "content-range";
 	private static final String UPLOAD_ZONE_KEY = "upload-zone-key";
@@ -96,7 +98,7 @@ public class StreamServlet extends HttpServlet {
 			File f = IoUtil.getTokenedFile(token);
 			start = f.length();
 			/*
-			 * 查看有没有分片的文件
+			 * 查看有没有分片的文件,无用
 			 * */
 			String zoneSize = redisService.get(UPLOAD_ZONE_KEY+"-start-"+token);
 			if(!StringUtils.isBlank(zoneSize)){
@@ -108,14 +110,12 @@ public class StreamServlet extends HttpServlet {
 				f.delete();
 				success = false;
 				message = "Error: 文件大小为空";
-			}
-			//将文件信息写入数据库,并标记为不可用(未上传完成)
-			if(start == 0){
+			}else if(start == 0){//将文件信息写入数据库,并标记为不可用(未上传完成)
 				BiVideoInfo dto = new BiVideoInfo();
 				dto.setvName(fileName);
 				dto.setvAvailable(2);
 				videoService.insertVideo(dto);
-				Integer viceoId = dto.getId();
+				Integer viceoId = dto.getId();//获得视频ID
 				redisService.set("file_upload_id"+token, String.valueOf(viceoId));
 			}
 		} catch (FileNotFoundException fne) {
@@ -225,7 +225,7 @@ public class StreamServlet extends HttpServlet {
 					dto.setId(Integer.parseInt(redisService.get("file_upload_id"+token)));
 					dto.setvAvailable(1);
 					videoService.updateVideo(dto);
-					redisService.del(new String[]{UPLOAD_ZONE_KEY+"-num-"+token, UPLOAD_ZONE_KEY+"-start-"+token, "file_upload_id"+token});//删除reids中的key
+					redisService.del(new String[]{UPLOAD_ZONE_KEY+"-num-"+token, UPLOAD_ZONE_KEY+"-start-"+token, "file_upload_id"+token, token});//删除reids中的key
 				}
 			} catch (IOException e) {
 				success = false;
@@ -278,13 +278,12 @@ public class StreamServlet extends HttpServlet {
 		/*
 		 * 先将本地磁盘的文件目录写入msql中的视频信息表
 		 * 然后开启一个线程，将文件上传到hdfs，上传完成后会对mysql中视频信息表中的文件目录进行修改，改为hdfs中的目录
-		 * 因为是一部分一部分传的，所以如果直接存hdfs的话会导致性能下降,这里就先存到本地，然后再存入hdfs
 		 * */
 		Integer id = Integer.parseInt(redisService.get("file_upload_id"+fileName));
 		BiZoneInfo info = new BiZoneInfo();
 		info.setvFileid(id);
-		info.setzFile(IoUtil.getFile(zone_fileName).toString());
-		videoService.insertZoneVider(info);
+		info.setzFile(zone_fileName);
+		videoService.insertZoneVider(info);//插入分片信息
 		UploadHDFSTask hdfsTask = new UploadHDFSTask(contextHelper, IoUtil.getFile(zone_fileName), zone_fileName, String.valueOf(info.getId()));
 		redisThreadPool.pushFromTail(Convert.objectToBytes(hdfsTask));
 		return flag;

@@ -3,15 +3,20 @@ package com.classroom.wnn.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.util.TokenUtil;
 import com.classroom.wnn.util.constants.Constants;
+import com.classroom.wnn.util.lock.RedisLockUtil;
 
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -24,8 +29,13 @@ import net.sf.json.JSONObject;
 public class TokenServlet extends HttpServlet {
 	private static final long serialVersionUID = 2650340991003623753L;
 	
+	private RedisService redisService;
+	
 	@Override
 	public void init() throws ServletException {
+		ServletContext servletContext = this.getServletContext();  
+		WebApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(servletContext); 
+		redisService = (RedisService) ctx.getBean("redisService");
 	}
 
 	@Override
@@ -44,7 +54,13 @@ public class TokenServlet extends HttpServlet {
 			message = "文件大小为0，不可上传";
 		}else{
 			String token = TokenUtil.generateToken(name, size);
-			json.put(Constants.TOKEN_FIELD, token);
+			if(redisService.exists(token)){//查看是否有锁，有的话直接报错
+				flag = false;
+				message = "此文件正在上传中";
+			}else{
+				redisService.set(token, String.valueOf(System.currentTimeMillis()));
+				json.put(Constants.TOKEN_FIELD, token);
+			}
 		}
 		
 		try {
