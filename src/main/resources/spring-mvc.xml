@@ -46,6 +46,16 @@ http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
 			</list>
 		</property>
 	</bean>
+	
+	<!-- jsonp支持，用于跨域  只要是参数中带有callback或jsonp即可对jsonp进行相应-->
+	<bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">  
+	    <property name="jsonpParameterNames">  
+	        <set>  
+	            <value>jsonp</value>  
+	            <value>callback</value>  
+	        </set>  
+	   </property>  
+	</bean>
 
 	<!-- 对模型视图名称的解析，即在模型视图名称添加前后缀 -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/" p:suffix=".jsp" />
