@@ -19,9 +19,6 @@ import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.classroom.wnn.util.constants.Constants;
 import com.classroom.wnn.util.lock.RedisLockUtil;

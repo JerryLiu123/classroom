@@ -55,4 +55,10 @@ public interface VideoService {
 	 * @throws IOException 
 	 */
 	public void uploadHDFS(File inputFile, String fileName, String infoKey) throws IOException;
+	
+	/**
+	 * 测试aop异常切面拦截
+	 * @throws Exception
+	 */
+	public void testException() throws Exception;
 }

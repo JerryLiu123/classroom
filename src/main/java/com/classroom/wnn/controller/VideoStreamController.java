@@ -27,7 +27,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.classroom.wnn.aop.annotation.Log;
 import com.classroom.wnn.service.RedisService;
+import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.util.Convert;
 import com.classroom.wnn.util.lock.RedisLockUtil;
 
@@ -37,13 +39,22 @@ public class VideoStreamController extends BaseController{
 	private static Logger logger = Logger.getLogger(VideoStreamController.class);
 
 	@Autowired
+	private VideoService videoService;
+	@Autowired
 	private RedisService redisService;
 	@Autowired
 	private RedisLockUtil redisLockUtil;
 	
+	@Log(name="11111")
 	@RequestMapping(value = "/toupvideo")
 	public String toVideo(HttpServletRequest req,HttpServletResponse resp, Map<String, Object> datamap){
 		datamap = getBaseMap(datamap);
+		try {
+			videoService.testException();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println(e.getMessage());
+		}
 		return "/index";
 	}
 	@RequestMapping(value = "/toopvideo")

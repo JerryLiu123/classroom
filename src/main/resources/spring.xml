@@ -2,11 +2,14 @@
 <beans default-lazy-init="true"
 	xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="
 http://www.springframework.org/schema/beans
 http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 http://www.springframework.org/schema/context
-http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+http://www.springframework.org/schema/context/spring-context-4.2.xsd
+http://www.springframework.org/schema/aop 
+http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
 
 	<!-- 引入属性文件 -->
 	<!-- <context:property-placeholder location="classpath:config.properties" /> -->
@@ -63,4 +66,14 @@ http://www.springframework.org/schema/context/spring-context-4.2.xsd">
 		<property name="streamFileRepository" value="${stream_file_repository}" />
 		<property name="ffmpegPath" value="${ffmpeg_path}" />
 	</bean>
+	
+	<!-- aop 进行异常拦截 -->
+ 	<bean id="exceptionHandler" class="com.classroom.wnn.aop.ExceptionHandler" />
+	<aop:config>
+		<aop:aspect ref="exceptionHandler">
+			<aop:pointcut expression="execution(* com.classroom.wnn.service..*.*(..))" 
+							id="exceptionService"/>
+			<aop:after-throwing pointcut-ref="exceptionService" method="afterThrowing" throwing="e" />
+		</aop:aspect>
+	</aop:config>
 </beans>

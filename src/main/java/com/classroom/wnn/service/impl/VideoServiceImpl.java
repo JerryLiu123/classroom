@@ -131,4 +131,11 @@ public class VideoServiceImpl implements VideoService {
 			inputFile.delete();
 		}
 	}
+
+
+	@Override
+	public void testException() throws Exception {
+		// TODO Auto-generated method stub
+		throw new Exception("测试异常拦截");
+	}
 }
