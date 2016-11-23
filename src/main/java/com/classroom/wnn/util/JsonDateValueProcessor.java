@@ -5,10 +5,7 @@ import java.util.Date;
 
 import net.sf.json.JsonConfig;
 import net.sf.json.processors.JsonValueProcessor;
-/**
- * 
- * JSON格式转换类 
- */
+
 public class JsonDateValueProcessor implements JsonValueProcessor {
 
 	private String format = "yyyy-MM-dd HH:mm:ss";

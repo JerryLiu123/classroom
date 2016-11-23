@@ -26,11 +26,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.classroom.wnn.aop.annotation.Log;
+import com.classroom.wnn.bean.UserBean;
 import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.util.Convert;
+import com.classroom.wnn.util.JsonDateValueProcessor;
+import com.classroom.wnn.util.JsonUtil;
 import com.classroom.wnn.util.lock.RedisLockUtil;
 
 @Controller
@@ -61,6 +65,17 @@ public class VideoStreamController extends BaseController{
 	public String toOpenVideo(HttpServletRequest req,HttpServletResponse resp, Map<String, Object> datamap){
 		datamap = getBaseMap(datamap);
 		return "/mystream";
+	}
+	@ResponseBody
+	@RequestMapping(value = "/testjson")
+	public UserBean toTestJson(HttpServletResponse response, Map<String, Object> dataMap){
+		dataMap = getBaseMap(dataMap);
+		UserBean bean = new UserBean();
+		bean.setBz("aaaaa");
+		bean.setDwdh("1111111");
+		//String json = JsonUtil.getJsonString4JavaPOJO(dataMap);
+		//ajaxJson(json, response);
+		return bean;
 	}
 	
 	/**
