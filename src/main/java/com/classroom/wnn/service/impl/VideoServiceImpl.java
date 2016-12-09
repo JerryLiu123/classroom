@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.classroom.wnn.aop.annotation.Log;
 import com.classroom.wnn.dao.BiVideoInfoMapper;
 import com.classroom.wnn.dao.BiZoneInfoMapper;
 import com.classroom.wnn.model.BiVideoInfo;
@@ -17,6 +18,7 @@ import com.classroom.wnn.model.BiZoneInfo;
 import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.util.Convert;
+import com.classroom.wnn.util.DataSourceContextHolder;
 import com.classroom.wnn.util.HdfsFileSystem;
 import com.classroom.wnn.util.constants.Constants;
 
@@ -132,10 +134,29 @@ public class VideoServiceImpl implements VideoService {
 		}
 	}
 
-
 	@Override
+	@Transactional
 	public void testException() throws Exception {
 		// TODO Auto-generated method stub
-		throw new Exception("测试异常拦截");
+		
+		BiZoneInfo biZoneInfo = new BiZoneInfo();
+		biZoneInfo.setvFileid(11111);
+		biZoneInfo.setzAvailable(11111);
+		biZoneInfo.setzFile("testFile1");
+		biZoneInfo.setzHdfsfile("testHdfsFile1");
+		biZoneInfo.setzIsdel(11111);
+		zoneMapper.insert(biZoneInfo);
+		
+		//切换数据源
+		DataSourceContextHolder.setDbType(Constants.DATESOURCE2);
+		
+		BiZoneInfo biZoneInfo2 = new BiZoneInfo();
+		biZoneInfo2.setvFileid(22222);
+		biZoneInfo2.setzAvailable(22222);
+		biZoneInfo2.setzFile("testFile2");
+		biZoneInfo2.setzHdfsfile("testHdfsFile2");
+		biZoneInfo2.setzIsdel(22222);
+		zoneMapper.insert(biZoneInfo2);
+		//throw new Exception("测试异常拦截");
 	}
 }

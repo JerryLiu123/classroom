@@ -1,7 +1,11 @@
 package com.classroom.wnn.aop;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -35,12 +39,36 @@ public class LogAop {
 	
 	/**
 	 * 在方法执行之前运行
+	 * 当配置 args 时，被拦截的方法必须带有 args 中的参数才可呗拦截
+	 * @param joinPoint
+	 */
+//	@Before("log() && args(request, response, datamap)")
+//	public void beforeExec(JoinPoint joinPoint, 
+//							HttpServletRequest request, 
+//							HttpServletResponse response, 
+//							Map<String, Object> datamap){
+//		System.out.println("===============切入点方法执行之前执行================");
+//		time.set(System.currentTimeMillis());
+//		tag.set(UUID.randomUUID().toString());
+//		if(request != null){
+//			System.out.println("URL:"+request.getRequestURL());
+//		}
+//		
+//		info(joinPoint);
+//		MethodSignature ms=(MethodSignature) joinPoint.getSignature();
+//		Method method=ms.getMethod();
+//		System.out.println(method.getAnnotation(Log.class).name()+"--标记--"+tag.get());
+//	}
+	
+	/**
+	 * 在方法执行之前运行
 	 * @param joinPoint
 	 */
 	@Before("log()")
 	public void beforeExec(JoinPoint joinPoint){
 		time.set(System.currentTimeMillis());
 		tag.set(UUID.randomUUID().toString());
+		
 		info(joinPoint);
 		MethodSignature ms=(MethodSignature) joinPoint.getSignature();
 		Method method=ms.getMethod();

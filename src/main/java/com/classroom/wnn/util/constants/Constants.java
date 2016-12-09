@@ -85,6 +85,10 @@ public class Constants {
 	public static final String SUCCESS = "success";
 	public static final String MESSAGE = "message";
 	
+	/**数据源名称**/
+	public static final String DATESOURCE1 = "dataMySQL1";
+	public static final String DATESOURCE2 = "dataMySQL2";
+	
 	public String getNamenodeIP() {
 		return namenodeIP;
 	}

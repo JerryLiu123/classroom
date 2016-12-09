@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.atomikos</groupId>
+  <artifactId>transactions-jmx</artifactId>
+  <version>4.0.4.EVAL</version>
+  <versioning>
+    <latest>4.0.4.EVAL</latest>
+    <release>4.0.4.EVAL</release>
+    <versions>
+      <version>4.0.4.EVAL</version>
+    </versions>
+    <lastUpdated>20160717080023</lastUpdated>
+  </versioning>
+</metadata>
