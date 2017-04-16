@@ -10,10 +10,13 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import base.BaseTest;
 
 import com.alibaba.fastjson.JSONObject;
+import com.classroom.wnn.dao.BiZoneInfoMapper;
+import com.classroom.wnn.model.BiZoneInfo;
 import com.classroom.wnn.schedule.BaseQuartzScheduler;
 import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.service.VideoService;
@@ -39,6 +42,8 @@ public class TaskTest extends BaseTest{
 	
 	@Test
 	public void test(){
+		
+
 //		System.err.println("-----------hdfs--开始------------");
 //		try {
 //			HdfsFileSystem.listDataNodeInfo();
@@ -51,7 +56,7 @@ public class TaskTest extends BaseTest{
 //		System.err.println("-----------hdfs--结束------------");
 //		System.err.println();
 		
-		videoService.delIsHDFSIsLocal();
+//		videoService.delIsHDFSIsLocal();
 		
 //		System.err.println("-----------reids基础应用--开始------------");
 //		redisService.set("测试key".getBytes(), "测试value".getBytes());
@@ -122,71 +127,71 @@ public class TaskTest extends BaseTest{
 //
 //		System.err.println("----------所有任务已执行完成----------");
 		
-		System.err.println("----------quartz开始----------");
-		System.out.println("开启一个job----"+myWork.srartJob("job_testJob1", "myGroup"));
-		//System.err.println("停止一个job----"+myWork.pauseJob("job_testJob1", "myGroup"));;
-		System.err.println("----------quartz结束----------");
-		try {
-//			solrServer.getServer();
+//		System.err.println("----------quartz开始----------");
+//		System.out.println("开启一个job----"+myWork.srartJob("job_testJob1", "myGroup"));
+//		//System.err.println("停止一个job----"+myWork.pauseJob("job_testJob1", "myGroup"));;
+//		System.err.println("----------quartz结束----------");
+//		try {
+////			solrServer.getServer();
+////			
+////			SolrQueryBean queryBean = new SolrQueryBean();
+////			Map<String, SortWay> aa = new HashMap<String, SortWay>();
+////			aa.put("name", SortWay.DESC);
+////			Map<String, String> bb = new HashMap<String, String>();
+////			bb.put("name", "testName_13*");
+////			bb.put("title", "这是测试title13*");
+////			queryBean.setQ(bb);
+////			queryBean.setSortField(aa);
+////			queryBean.setHighlightField("name");
 //			
-//			SolrQueryBean queryBean = new SolrQueryBean();
-//			Map<String, SortWay> aa = new HashMap<String, SortWay>();
-//			aa.put("name", SortWay.DESC);
-//			Map<String, String> bb = new HashMap<String, String>();
-//			bb.put("name", "testName_13*");
-//			bb.put("title", "这是测试title13*");
-//			queryBean.setQ(bb);
-//			queryBean.setSortField(aa);
-//			queryBean.setHighlightField("name");
-			
-			
-//			QueryResponse queryResponse = solrServer.getValue(queryBean);
-			
-//			System.out.println("本次查询时间为-----"+queryResponse.getQTime()+"毫秒");
 //			
-//			//按照时间获得数据
-////			Map<String, Integer> maps = queryResponse.getFacetQuery();
-////            for (Entry<String, Integer> entry : maps.entrySet()) { 
-////            	System.out.println(entry.getKey() + ":" + entry.getValue());  
-////            } 
-//			List<FacetField> facets = queryResponse.getFacetFields();// 返回的facet列表  
-//			if(facets != null){
-//				for (FacetField facet : facets) {  
-//				    System.out.println(facet.getName());  
-//				    System.out.println("----------------");  
-//				    List<Count> counts = facet.getValues();  
-//				    for (Count countitem : counts) {  
-//				       System.out.println(countitem.getName() + ":"  
-//				                          + countitem.getCount());  
-//				    }  
-//				    System.out.println();
-//				}
-//			}
+////			QueryResponse queryResponse = solrServer.getValue(queryBean);
 //			
-//			//获得高亮列表
-//			Map<String,Map<String,List<String>>> tempMap = queryResponse.getHighlighting();
-//			System.err.println(JSONObject.toJSON(tempMap));
-//			
-////			for(Map.Entry<String, Map<String,List<String>>> entry : tempMap.entrySet()){
-////				System.err.println(entry.getKey());
-////				System.err.println("---------------");
+////			System.out.println("本次查询时间为-----"+queryResponse.getQTime()+"毫秒");
+////			
+////			//按照时间获得数据
+//////			Map<String, Integer> maps = queryResponse.getFacetQuery();
+//////            for (Entry<String, Integer> entry : maps.entrySet()) { 
+//////            	System.out.println(entry.getKey() + ":" + entry.getValue());  
+//////            } 
+////			List<FacetField> facets = queryResponse.getFacetFields();// 返回的facet列表  
+////			if(facets != null){
+////				for (FacetField facet : facets) {  
+////				    System.out.println(facet.getName());  
+////				    System.out.println("----------------");  
+////				    List<Count> counts = facet.getValues();  
+////				    for (Count countitem : counts) {  
+////				       System.out.println(countitem.getName() + ":"  
+////				                          + countitem.getCount());  
+////				    }  
+////				    System.out.println();
+////				}
 ////			}
-//			
-//			//获得返回值
-//			SolrDocumentList list = queryResponse.getResults();
-//			if(list != null){
-//				for(SolrDocument doc : list){
-//					System.out.println(doc.getFieldValue("name"));
-//				}
-//			}else{
-//				System.out.println("没有数据");
-//			}
-			System.err.println("===================");
-			Thread.sleep(10 * 60 *1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+////			
+////			//获得高亮列表
+////			Map<String,Map<String,List<String>>> tempMap = queryResponse.getHighlighting();
+////			System.err.println(JSONObject.toJSON(tempMap));
+////			
+//////			for(Map.Entry<String, Map<String,List<String>>> entry : tempMap.entrySet()){
+//////				System.err.println(entry.getKey());
+//////				System.err.println("---------------");
+//////			}
+////			
+////			//获得返回值
+////			SolrDocumentList list = queryResponse.getResults();
+////			if(list != null){
+////				for(SolrDocument doc : list){
+////					System.out.println(doc.getFieldValue("name"));
+////				}
+////			}else{
+////				System.out.println("没有数据");
+////			}
+//			System.err.println("===================");
+//			Thread.sleep(10 * 60 *1000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 	
 	public void cccc(){

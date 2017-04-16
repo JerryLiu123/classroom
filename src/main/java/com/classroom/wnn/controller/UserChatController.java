@@ -30,59 +30,59 @@ public class UserChatController extends BaseController{
 	private static Logger logger = Logger.getLogger(UserChatController.class);
 	
 	
-	private SimpMessagingTemplate template;
-	@Autowired
-	public UserChatController(SimpMessagingTemplate t) {
-		this.template = t;
-	}
-    //消息缓存列表，先暂时不用redis 的队列了~
-    private Map<String, Object> msgCache = new HashMap<String, Object>();
-	
-	/**
-	 * WebSocket聊天的相应接收方法和转发方法
-	 * 客户端通过app/userChat调用该方法，并将处理的消息发送客户端订阅的地址
-	 * @param chatMessage  关于用户聊天的各个信息
-	 */
-	@MessageMapping("/userChat")
-	public void userChat(ChatMessageBean chatMessage) {
-		// 找到需要发送的地址(客户端订阅地址)
-		String dest = "/userChat/chat" + chatMessage.getRoomid();
-		// 获取缓存，并将用户最新的聊天记录存储到缓存中
-		Object cache = msgCache.get(chatMessage.getRoomid());
-		try {
-			chatMessage.setRoomid(URLDecoder.decode(chatMessage.getRoomid(),"utf-8"));
-			chatMessage.setUserName(URLDecoder.decode(chatMessage.getUserName(), "utf-8"));
-			chatMessage.setDeptName(URLDecoder.decode(chatMessage.getDeptName(), "utf-8"));
-			chatMessage.setChatContent(URLDecoder.decode(chatMessage.getChatContent(), "utf-8"));
-			chatMessage.setIsSysMsg(URLDecoder.decode(chatMessage.getIsSysMsg(),"utf-8"));
-			chatMessage.setCurTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace(); 
-		}
-		// 发送用户的聊天记录
-		this.template.convertAndSend(dest, chatMessage);
-        ((LimitQueue<ChatMessageBean>) cache).offer(chatMessage);
-	}
-
-	
-	@SubscribeMapping("/initChat/{roomid}")
-	public LimitQueue<ChatMessageBean> initChatRoom(@DestinationVariable("roomid") String roomid) {
-		//logger.info("-------新用户进入聊天室------");
-		LimitQueue<ChatMessageBean> chatlist = new LimitQueue<ChatMessageBean>(5);
-		// 发送用户的聊天记录
-		if (!msgCache.containsKey(roomid)) {
-			// 从来没有人进入聊天空间
-			msgCache.put(roomid, chatlist);
-		} else {
-			chatlist = (LimitQueue<ChatMessageBean>) msgCache.get(roomid);
-		}
-		return chatlist;
-	}
+//	private SimpMessagingTemplate template;
+//	@Autowired
+//	public UserChatController(SimpMessagingTemplate t) {
+//		this.template = t;
+//	}
+//    //消息缓存列表，先暂时不用redis 的队列了~
+//    private Map<String, Object> msgCache = new HashMap<String, Object>();
+//	
+//	/**
+//	 * WebSocket聊天的相应接收方法和转发方法
+//	 * 客户端通过app/userChat调用该方法，并将处理的消息发送客户端订阅的地址
+//	 * @param chatMessage  关于用户聊天的各个信息
+//	 */
+//	@MessageMapping("/userChat")
+//	public void userChat(ChatMessageBean chatMessage) {
+//		// 找到需要发送的地址(客户端订阅地址)
+//		String dest = "/userChat/chat" + chatMessage.getRoomid();
+//		// 获取缓存，并将用户最新的聊天记录存储到缓存中
+//		Object cache = msgCache.get(chatMessage.getRoomid());
+//		try {
+//			chatMessage.setRoomid(URLDecoder.decode(chatMessage.getRoomid(),"utf-8"));
+//			chatMessage.setUserName(URLDecoder.decode(chatMessage.getUserName(), "utf-8"));
+//			chatMessage.setDeptName(URLDecoder.decode(chatMessage.getDeptName(), "utf-8"));
+//			chatMessage.setChatContent(URLDecoder.decode(chatMessage.getChatContent(), "utf-8"));
+//			chatMessage.setIsSysMsg(URLDecoder.decode(chatMessage.getIsSysMsg(),"utf-8"));
+//			chatMessage.setCurTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace(); 
+//		}
+//		// 发送用户的聊天记录
+//		this.template.convertAndSend(dest, chatMessage);
+//        ((LimitQueue<ChatMessageBean>) cache).offer(chatMessage);
+//	}
+//
+//	
+//	@SubscribeMapping("/initChat/{roomid}")
+//	public LimitQueue<ChatMessageBean> initChatRoom(@DestinationVariable("roomid") String roomid) {
+//		//logger.info("-------新用户进入聊天室------");
+//		LimitQueue<ChatMessageBean> chatlist = new LimitQueue<ChatMessageBean>(5);
+//		// 发送用户的聊天记录
+//		if (!msgCache.containsKey(roomid)) {
+//			// 从来没有人进入聊天空间
+//			msgCache.put(roomid, chatlist);
+//		} else {
+//			chatlist = (LimitQueue<ChatMessageBean>) msgCache.get(roomid);
+//		}
+//		return chatlist;
+//	}
 	
 	@RequestMapping(value="/touserchat/{roomid}")
 	public String toUserChat(HttpServletRequest req,HttpServletResponse resp, Map<String, Object> datamap, @PathVariable("roomid") String roomid){
 		datamap = getBaseMap(datamap);
 		datamap.put("roomid", roomid);
-		return "socket";
+		return "newsocket";
 	}
 }

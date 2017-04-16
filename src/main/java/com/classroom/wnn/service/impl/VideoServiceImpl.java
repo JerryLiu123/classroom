@@ -157,6 +157,6 @@ public class VideoServiceImpl implements VideoService {
 		biZoneInfo2.setzHdfsfile("testHdfsFile2");
 		biZoneInfo2.setzIsdel(22222);
 		zoneMapper.insert(biZoneInfo2);
-		//throw new Exception("测试异常拦截");
+		throw new Exception("测试异常拦截");
 	}
 }

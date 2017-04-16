@@ -33,6 +33,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void configureClientOutboundChannel(ChannelRegistration arg0) {
 		// TODO Auto-generated method stub
+		System.out.println(arg0.toString());
 		
 	}
 

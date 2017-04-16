@@ -280,6 +280,12 @@
     	<artifactId>transactions</artifactId>
     	<version>${atomikos.version}</version>
     </dependency>
+    <!-- spring 分布式session -->
+     <dependency>  
+        <groupId>org.springframework.session</groupId>  
+        <artifactId>spring-session-data-redis</artifactId>  
+        <version>1.0.1.RELEASE</version>  
+    </dependency>
     
   </dependencies>
   <build>
@@ -312,6 +318,23 @@
                   <skipTests>true</skipTests>
               </configuration>
           </plugin>
+          
+          <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+		 </plugin>
 	</plugins>
   </build>
 </project>

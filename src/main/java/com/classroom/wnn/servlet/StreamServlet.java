@@ -218,7 +218,7 @@ public class StreamServlet extends HttpServlet {
 //				}else if(f.length() < ZONE_SIZE && range.getSize() != start){//未达到分片大小，总上传未完成
 //					
 //				}
-				if(range.getSize() == start){//未达到分片大小，但总上传已经完成
+				if(range.getSize() == start){//总上传已经完成
 					rename(f, token, getNextNum(token), fileName.substring(fileName.lastIndexOf(".")));
 					//将数据库中的文件信息标记为上传完成
 					BiVideoInfo dto = new BiVideoInfo();

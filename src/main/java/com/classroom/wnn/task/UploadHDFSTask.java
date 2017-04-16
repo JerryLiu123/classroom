@@ -48,27 +48,28 @@ public class UploadHDFSTask extends Task {
 //													"_"+
 //													System.currentTimeMillis())+
 //													this.fileName.substring(this.fileName.lastIndexOf("."));
+			crteatHDFS();
 			
 			//将视频切片
-			String videoPath = inputFile.getPath();//视频地址
-			Long videoSize = inputFile.length();//视频总长度
-			System.out.print(videoPath +"----"+ videoSize);
-			if(videoSize > ZONE_SIZE){
-				Map<String, String> info = VideoUtil.getVideoInfo(videoPath);
-				if(info == null || !info.containsKey("time")){
-					throw new IOException();
-				}
-				//计算每一个切片的开始和结束时间
-				Long zoneNum = videoSize/ZONE_SIZE;
-				if(videoSize%ZONE_SIZE > 0){
-					zoneNum = zoneNum + 1;
-				}
-				for(int i=0;i<zoneNum;i++){
-					
-				}
-			}else{
-				crteatHDFS();
-			}
+//			String videoPath = inputFile.getPath();//视频地址
+//			Long videoSize = inputFile.length();//视频总长度
+//			System.out.print(videoPath +"----"+ videoSize);
+//			if(videoSize > ZONE_SIZE){
+//				Map<String, String> info = VideoUtil.getVideoInfo(videoPath);
+//				if(info == null || !info.containsKey("time")){
+//					throw new IOException();
+//				}
+//				//计算每一个切片的开始和结束时间
+//				Long zoneNum = videoSize/ZONE_SIZE;
+//				if(videoSize%ZONE_SIZE > 0){
+//					zoneNum = zoneNum + 1;
+//				}
+//				for(int i=0;i<zoneNum;i++){
+//					
+//				}
+//			}else{
+//				crteatHDFS();
+//			}
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
