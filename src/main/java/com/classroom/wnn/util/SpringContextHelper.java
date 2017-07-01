@@ -16,7 +16,6 @@ public class SpringContextHelper implements ApplicationContextAware ,Serializabl
 //	public static Object getBean(Class className) {
 //		return applicationContext.getBean(className);
 //	}
-	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		// TODO Auto-generated method stub
 		SpringContextHelper.applicationContext = applicationContext;

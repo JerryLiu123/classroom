@@ -61,4 +61,7 @@ public interface VideoService {
 	 * @throws Exception
 	 */
 	public void testException() throws Exception;
+	
+	
+	public void testException2() throws Exception;
 }

@@ -55,6 +55,7 @@ http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
         </property>
 	</bean>
 
+	<!-- 使用这个数据源切换方式最好在每一次运行sql方法之前都先确认一下数据源 -->
 	<!-- 使用 AbstractRoutingDataSource 动态切换数据源，但是在加事务的方法中无法切换，也就是说一个事务只能使用一个数据源,怎么解决还在寻找方法 -->
 	<bean id="dataSource" class="com.classroom.wnn.util.DynamicDataSource">
 		<property name="targetDataSources">
@@ -83,14 +84,14 @@ http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
 	</bean>
 	
- 	 <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"  
+<!--  	 <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"  
         init-method="init" destroy-method="close">  
         <property name="forceShutdown">  
             <value>true</value>  
         </property>  
     </bean>  
   
-  	<!-- 事务默认超时时间 -->
+  	事务默认超时时间
     <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">  
         <property name="transactionTimeout" value="300" />  
     </bean>  
@@ -105,17 +106,17 @@ http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
         </property>  
     </bean>  
       
-    <tx:annotation-driven transaction-manager="springTransactionManager"/>   
+    <tx:annotation-driven transaction-manager="springTransactionManager"/>  -->  
    
 
 	<!-- 配置事务管理器 -->
-<!-- 	<bean id="transactionManager"
+ 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
-	</bean> -->
+	</bean>
 
 	<!-- 注解方式配置事物 -->
-	<!-- <tx:annotation-driven transaction-manager="transactionManager" /> -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<!-- 拦截器方式配置事物 <tx:advice id="transactionAdvice" transaction-manager="transactionManager"> 
 		<tx:attributes> <tx:method name="add*" propagation="REQUIRED" /> <tx:method 

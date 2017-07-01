@@ -31,7 +31,7 @@ public class NewWebSockTest extends TextWebSocketHandler {
 			CloseStatus status) throws Exception {
 		// TODO Auto-generated method stub
 		super.afterConnectionClosed(session, status);
-		System.out.println("---------");
+		//System.out.println("---------");
 		threadMap.get(session.getId()).interrupt();
 		threadMap.get(session.getId()).join();
 	}

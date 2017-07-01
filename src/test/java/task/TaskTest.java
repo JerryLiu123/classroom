@@ -21,20 +21,21 @@ import com.classroom.wnn.schedule.BaseQuartzScheduler;
 import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.task.RedisThreadPool;
+import com.classroom.wnn.util.DataSourceContextHolder;
 import com.classroom.wnn.util.HdfsFileSystem;
 import com.classroom.wnn.util.constants.Constants;
 import com.classroom.wnn.util.lock.RedisLockUtil;
 
 public class TaskTest extends BaseTest{
 
-	@Autowired
-	private RedisThreadPool redisThreadPool;
-	@Autowired
-	private BaseQuartzScheduler myWork;
+/*	@Autowired
+	private RedisThreadPool redisThreadPool;*/
+/*	@Autowired
+	private BaseQuartzScheduler myWork;*/
 	@Autowired
 	private RedisService redisService;
-	@Autowired
-	private RedisLockUtil redisLockUtil;
+/*	@Autowired
+	private RedisLockUtil redisLockUtil;*/
 	@Autowired
 	private VideoService videoService;
 	
@@ -43,7 +44,60 @@ public class TaskTest extends BaseTest{
 	@Test
 	public void test(){
 		
-
+//		try {
+//			videoService.testException();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			System.out.println("-----------------"+e.getLocalizedMessage());
+//		}
+		
+		try {
+			videoService.testException();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			System.err.println(e1.getLocalizedMessage());
+		}
+		try {
+			videoService.testException2();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			System.err.println(e1.getLocalizedMessage());
+		}
+		
+//		new Thread(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				// TODO Auto-generated method stub
+//				try {
+//					videoService.testException();
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		}).start();
+//		new Thread(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				// TODO Auto-generated method stub
+//				try {
+//					videoService.testException2();
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		}).start();
+//		System.out.println(DataSourceContextHolder.getDbType());
+/*		try {
+			Thread.sleep(15000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
 //		System.err.println("-----------hdfs--开始------------");
 //		try {
 //			HdfsFileSystem.listDataNodeInfo();
@@ -194,7 +248,7 @@ public class TaskTest extends BaseTest{
 //		}
 	}
 	
-	public void cccc(){
+/*	public void cccc(){
 		String value=null;
 		try {
 			value = redisLockUtil.addLock("taskLock", Long.valueOf(3*60*1000));
@@ -230,5 +284,5 @@ public class TaskTest extends BaseTest{
 			redisLockUtil.unLock("taskLock", value);
 		}
 		//fuck = fuck + 1;
-	}
+	}*/
 }

@@ -17,13 +17,13 @@ import com.classroom.wnn.model.BiZoneInfo;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:spring.xml","classpath:spring-mybatis.xml","classpath:spring-mvc.xml","classpath:spring-quartz.xml"})
+@ContextConfiguration(locations={"classpath:spring.xml","classpath:spring-mybatis.xml","classpath:spring-quartz.xml","classpath:spring-mvc.xml"})
 public class BaseTest {
 
 //	@Autowired
 //	private BiZoneInfoMapper biZoneInfoMapper;
 	
-	@Test
+/*	@Test
 	public void testName() throws Exception {
 		BiZoneInfo biZoneInfo = new BiZoneInfo();
 		biZoneInfo.setvFileid(11111);
@@ -34,5 +34,5 @@ public class BaseTest {
 		//biZoneInfoMapper.insert(biZoneInfo);
 		System.out.println("------------");
 		
-	}
+	}*/
 }

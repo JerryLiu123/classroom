@@ -24,20 +24,17 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	private static Logger logger = Logger.getLogger(WebSocketConfig.class);
 
-	@Override
 	public void configureClientInboundChannel(ChannelRegistration arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void configureClientOutboundChannel(ChannelRegistration arg0) {
 		// TODO Auto-generated method stub
 		System.out.println(arg0.toString());
 		
 	}
 
-	@Override
 	public void configureMessageBroker(MessageBrokerRegistry arg0) {
 		// TODO Auto-generated method stub
         //这里设置的simple broker是指可以订阅的地址，也就是服务器可以发送的地址
@@ -46,32 +43,27 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         logger.info("webSocket 服务启动成功");
 	}
 	
-	@Override
 	public void registerStompEndpoints(StompEndpointRegistry arg0) {
 		// TODO Auto-generated method stub
 		//添加这个Endpoint，这样在网页中就可以通过websocket连接上服务了
 		arg0.addEndpoint("/webchat").withSockJS();
 	}
 
-	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public boolean configureMessageConverters(List<MessageConverter> arg0) {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
-	@Override
 	public void configureWebSocketTransport(WebSocketTransportRegistration arg0) {
 		// TODO Auto-generated method stub
 		

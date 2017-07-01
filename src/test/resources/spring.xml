@@ -12,8 +12,8 @@ http://www.springframework.org/schema/aop
 http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
 
 	<!-- 引入属性文件 -->
-	<!-- <context:property-placeholder location="classpath:config.properties" /> -->
-	<context:property-placeholder location="${CLASSROOM_CFG}/config.properties" />
+	<context:property-placeholder location="classpath:config.properties" />
+	<!-- <context:property-placeholder location="${CLASSROOM_CFG}/config.properties" /> -->
 
 	<context:component-scan base-package="com.classroom.wnn.schedule" />
 	<context:component-scan base-package="com.classroom.wnn.service" />
@@ -54,6 +54,10 @@ http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
 		<property name="worker_num" value="5" />
 		<property name="redisLockUtil" ref="redisLockUtil" />
 	</bean>
+	<!-- spring redis session 共享 -->
+<!-- 	<bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
+		<property name="maxInactiveIntervalInSeconds" value="1800"></property>
+	</bean> -->
 	<!-- 静态变量配置 -->
 	<bean lazy-init="false" id="Constants" class="com.classroom.wnn.util.constants.Constants">
 		<property name="namenodeIP" value="${namenode_ip}" />

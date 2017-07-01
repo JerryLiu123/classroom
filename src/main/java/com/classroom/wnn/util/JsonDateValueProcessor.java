@@ -17,7 +17,6 @@ public class JsonDateValueProcessor implements JsonValueProcessor {
 		this.format = format;
 	}
 
-	@Override
 	public Object processArrayValue(Object value, JsonConfig jsonConfig) {
 		String[] obj = {};
 		if (value instanceof Date[]) {
@@ -31,7 +30,6 @@ public class JsonDateValueProcessor implements JsonValueProcessor {
 		return obj;
 	}
 
-	@Override
 	public Object processObjectValue(String key, Object value,
 			JsonConfig jsonConfig) {
 		if (value instanceof Date) {

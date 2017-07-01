@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.classroom.wnn.aop.annotation.Log;
 import com.classroom.wnn.dao.BiVideoInfoMapper;
 import com.classroom.wnn.dao.BiZoneInfoMapper;
+import com.classroom.wnn.daoslave.BiZoneInfoMapperSlave;
 import com.classroom.wnn.model.BiVideoInfo;
 import com.classroom.wnn.model.BiZoneInfo;
 import com.classroom.wnn.service.RedisService;
@@ -32,28 +33,26 @@ public class VideoServiceImpl implements VideoService {
 	private BiZoneInfoMapper zoneMapper;
 	@Autowired
 	private RedisService redisService;
+	@Autowired
+	private BiZoneInfoMapperSlave zonemapperSlave;
 	
 
-	@Override
 	public int insertVideo(BiVideoInfo info) {
 		// TODO Auto-generated method stub
 		return videoMapper.insertReturnKey(info);
 	}
 	
 
-	@Override
 	public int updateVideo(BiVideoInfo info) {
 		// TODO Auto-generated method stub
 		return videoMapper.updateByPrimaryKeySelective(info);
 	}
 	
-	@Override
 	public int insertZoneVider(BiZoneInfo info) {
 		// TODO Auto-generated method stub
 		return zoneMapper.insertReturnKey(info);
 	}
 
-	@Override
 	public int updateHDFSFile(String key, String path) {
 		// TODO Auto-generated method stub
 		BiZoneInfo info = new BiZoneInfo();
@@ -68,7 +67,6 @@ public class VideoServiceImpl implements VideoService {
 //		return videoMapper.selectByPrimaryKey(id);
 //	}
 
-	@Override
 	@Transactional
 	public List<BiZoneInfo> delIsHDFSIsLocal() {
 		// TODO Auto-generated method stub
@@ -106,7 +104,6 @@ public class VideoServiceImpl implements VideoService {
 		return upInfos;
 	}
 
-	@Override
 	@Transactional
 	public void uploadHDFS(File inputFile, String fileName, String infoKey) throws IOException {
 		// TODO Auto-generated method stub
@@ -134,11 +131,14 @@ public class VideoServiceImpl implements VideoService {
 		}
 	}
 
-	@Override
-	@Transactional
+	
+	
 	public void testException() throws Exception {
 		// TODO Auto-generated method stub
 		
+		//DataSourceContextHolder.setDbType(Constants.DATESOURCE1);
+		System.out.println("---线程1---"+DataSourceContextHolder.getDbType());
+		Thread.sleep(3000);
 		BiZoneInfo biZoneInfo = new BiZoneInfo();
 		biZoneInfo.setvFileid(11111);
 		biZoneInfo.setzAvailable(11111);
@@ -147,16 +147,45 @@ public class VideoServiceImpl implements VideoService {
 		biZoneInfo.setzIsdel(11111);
 		zoneMapper.insert(biZoneInfo);
 		
-		//切换数据源
-		DataSourceContextHolder.setDbType(Constants.DATESOURCE2);
-		
 		BiZoneInfo biZoneInfo2 = new BiZoneInfo();
 		biZoneInfo2.setvFileid(22222);
 		biZoneInfo2.setzAvailable(22222);
 		biZoneInfo2.setzFile("testFile2");
 		biZoneInfo2.setzHdfsfile("testHdfsFile2");
 		biZoneInfo2.setzIsdel(22222);
-		zoneMapper.insert(biZoneInfo2);
+		//切换数据源
+		//DataSourceContextHolder.setDbType(Constants.DATESOURCE2);
+		zonemapperSlave.insert(biZoneInfo2);
+		//DataSourceContextHolder.clearDbType();
+		//throw new Exception("测试异常拦截");
+	}
+	
+	@Transactional(rollbackFor=java.lang.Exception.class)
+	public void testException2() throws Exception {
+		// TODO Auto-generated method stub
+		
+		//DataSourceContextHolder.setDbType(Constants.DATESOURCE1);
+		System.out.println("---线程2---"+DataSourceContextHolder.getDbType());
+		BiZoneInfo biZoneInfo = new BiZoneInfo();
+		biZoneInfo.setvFileid(33333);
+		biZoneInfo.setzAvailable(33333);
+		biZoneInfo.setzFile("testFile13");
+		biZoneInfo.setzHdfsfile("testHdfsFile13");
+		biZoneInfo.setzIsdel(33333);
+		zoneMapper.insert(biZoneInfo);
+		
+		//Thread.sleep(3000);
+		
+		BiZoneInfo biZoneInfo2 = new BiZoneInfo();
+		biZoneInfo2.setvFileid(44444);
+		biZoneInfo2.setzAvailable(44444);
+		biZoneInfo2.setzFile("testFile4");
+		biZoneInfo2.setzHdfsfile("testHdfsFile4");
+		biZoneInfo2.setzIsdel(44444);
+		//DataSourceContextHolder.setDbType(Constants.DATESOURCE2);
+		zonemapperSlave.insert(biZoneInfo2);
+		//DataSourceContextHolder.clearDbType();
+		
 		throw new Exception("测试异常拦截");
 	}
 }
