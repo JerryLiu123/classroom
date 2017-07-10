@@ -22,6 +22,7 @@ import com.classroom.wnn.util.Convert;
 import com.classroom.wnn.util.DataSourceContextHolder;
 import com.classroom.wnn.util.HdfsFileSystem;
 import com.classroom.wnn.util.constants.Constants;
+import com.classroom.wnn.util.dynamicdatasource.CustomerContextHolder;
 
 @Service(value="videoService")
 public class VideoServiceImpl implements VideoService {
@@ -33,8 +34,8 @@ public class VideoServiceImpl implements VideoService {
 	private BiZoneInfoMapper zoneMapper;
 	@Autowired
 	private RedisService redisService;
-	@Autowired
-	private BiZoneInfoMapperSlave zonemapperSlave;
+//	@Autowired
+//	private BiZoneInfoMapperSlave zonemapperSlave;
 	
 
 	public int insertVideo(BiVideoInfo info) {
@@ -132,11 +133,11 @@ public class VideoServiceImpl implements VideoService {
 	}
 
 	
-	
+	@Transactional(rollbackFor=java.lang.Exception.class)
 	public void testException() throws Exception {
 		// TODO Auto-generated method stub
 		
-		//DataSourceContextHolder.setDbType(Constants.DATESOURCE1);
+		CustomerContextHolder.setContextType(Constants.DATESOURCE1);
 		System.out.println("---线程1---"+DataSourceContextHolder.getDbType());
 		Thread.sleep(3000);
 		BiZoneInfo biZoneInfo = new BiZoneInfo();
@@ -154,9 +155,8 @@ public class VideoServiceImpl implements VideoService {
 		biZoneInfo2.setzHdfsfile("testHdfsFile2");
 		biZoneInfo2.setzIsdel(22222);
 		//切换数据源
-		//DataSourceContextHolder.setDbType(Constants.DATESOURCE2);
-		zonemapperSlave.insert(biZoneInfo2);
-		//DataSourceContextHolder.clearDbType();
+		CustomerContextHolder.setContextType(Constants.DATESOURCE2);
+		zoneMapper.insert(biZoneInfo2);
 		//throw new Exception("测试异常拦截");
 	}
 	
@@ -164,28 +164,30 @@ public class VideoServiceImpl implements VideoService {
 	public void testException2() throws Exception {
 		// TODO Auto-generated method stub
 		
-		//DataSourceContextHolder.setDbType(Constants.DATESOURCE1);
 		System.out.println("---线程2---"+DataSourceContextHolder.getDbType());
-		BiZoneInfo biZoneInfo = new BiZoneInfo();
-		biZoneInfo.setvFileid(33333);
-		biZoneInfo.setzAvailable(33333);
-		biZoneInfo.setzFile("testFile13");
-		biZoneInfo.setzHdfsfile("testHdfsFile13");
-		biZoneInfo.setzIsdel(33333);
-		zoneMapper.insert(biZoneInfo);
-		
-		//Thread.sleep(3000);
-		
 		BiZoneInfo biZoneInfo2 = new BiZoneInfo();
 		biZoneInfo2.setvFileid(44444);
 		biZoneInfo2.setzAvailable(44444);
 		biZoneInfo2.setzFile("testFile4");
 		biZoneInfo2.setzHdfsfile("testHdfsFile4");
 		biZoneInfo2.setzIsdel(44444);
-		//DataSourceContextHolder.setDbType(Constants.DATESOURCE2);
-		zonemapperSlave.insert(biZoneInfo2);
+		CustomerContextHolder.setContextType(Constants.DATESOURCE2);
+		zoneMapper.insert(biZoneInfo2);
+		
+		Thread.sleep(3000);
+		
+		//DataSourceContextHolder.setDbType(Constants.DATESOURCE1);
+		BiZoneInfo biZoneInfo = new BiZoneInfo();
+		biZoneInfo.setvFileid(33333);
+		biZoneInfo.setzAvailable(33333);
+		biZoneInfo.setzFile("testFile13");
+		biZoneInfo.setzHdfsfile("testHdfsFile13");
+		biZoneInfo.setzIsdel(33333);
+		CustomerContextHolder.setContextType(Constants.DATESOURCE1);
+		zoneMapper.insert(biZoneInfo);
+		
 		//DataSourceContextHolder.clearDbType();
 		
-		throw new Exception("测试异常拦截");
+		//throw new Exception("测试异常拦截");
 	}
 }

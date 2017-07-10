@@ -1,5 +1,10 @@
 package com.classroom.wnn.util;
 
+/**
+ * 弃用
+ * @author xiaoming
+ *
+ */
 public class DataSourceContextHolder {
     private static final ThreadLocal<String> contextHolder = new ThreadLocal<String>();  
     

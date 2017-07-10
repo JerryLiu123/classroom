@@ -51,7 +51,7 @@ public class TaskTest extends BaseTest{
 //			System.out.println("-----------------"+e.getLocalizedMessage());
 //		}
 		
-		try {
+/*		try {
 			videoService.testException();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -62,41 +62,40 @@ public class TaskTest extends BaseTest{
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			System.err.println(e1.getLocalizedMessage());
-		}
+		}*/
 		
-//		new Thread(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				// TODO Auto-generated method stub
-//				try {
-//					videoService.testException();
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		}).start();
-//		new Thread(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				// TODO Auto-generated method stub
-//				try {
-//					videoService.testException2();
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		}).start();
+		new Thread(new Runnable() {
+			
+			public void run() {
+				// TODO Auto-generated method stub
+				try {
+					videoService.testException();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}).start();
+		
+		new Thread(new Runnable() {
+			
+			public void run() {
+				// TODO Auto-generated method stub
+				try {
+					videoService.testException2();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}).start();
 //		System.out.println(DataSourceContextHolder.getDbType());
-/*		try {
+		try {
 			Thread.sleep(15000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 		
 //		System.err.println("-----------hdfs--开始------------");
 //		try {

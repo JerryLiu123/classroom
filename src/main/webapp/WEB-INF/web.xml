@@ -8,6 +8,7 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:spring.xml,classpath:spring-quartz.xml,classpath:spring-mybatis.xml</param-value>
 	</context-param>
+	<!-- 过滤器 -->
 	<filter>
 		<description>字符集过滤器</description>
 		<filter-name>encodingFilter</filter-name>

@@ -13,6 +13,9 @@
     http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
     http://www.springframework.org/schema/aop 
     http://www.springframework.org/schema/aop/spring-aop-4.0.xsd" default-lazy-init="true">
+    
+    
+    
     <description>配置主-从数据源信息</description>
     <!-- com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean -->
     <bean id="abstractXADataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close" abstract="true">  
@@ -76,46 +79,6 @@
         </property>
     </bean> 
 
-	<!-- 配置数据源 -->
-<!--  	<bean name="masterDataSource" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean" init-method="init"  
-          destroy-method="close">
-        <property name="uniqueResourceName" value="atomikosNonXADS1" />  
-        <property name="driverClassName" value="${driverClassName}" />  
-        <property name="url" value="${jdbc_url}" />  
-        <property name="user" value="${jdbc_username}" />  
-        <property name="password" value="${jdbc_password}" />  
-        <property name="poolSize" value="5" />  
-        <property name="minPoolSize" value="10"/>  
-        <property name="maxPoolSize" value="30"/> 
-        <property name="borrowConnectionTimeout" value="60" /> 	
-        <property name="reapTimeout" value="20"/>  
-        <property name="maxIdleTime" value="60"/>  
-        <property name="maintenanceInterval" value="60"/>  
-        <property name="loginTimeout" value="60"/>  
-        <property name="testQuery">  
-            <value>select 1</value>  
-        </property> 
-	</bean>
-	<bean name="slaveDataSource" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean" init-method="init"  
-          destroy-method="close">
-	    <property name="uniqueResourceName" value="atomikosNonXADS2" />  
-        <property name="driverClassName" value="${driverClassName}" />  
-        <property name="url" value="${jdbc_url2}" />  
-        <property name="user" value="${jdbc_username}" />  
-        <property name="password" value="${jdbc_password}" />  
-        <property name="poolSize" value="5" />  
-        <property name="minPoolSize" value="10"/>  
-        <property name="maxPoolSize" value="30"/> 
-        <property name="borrowConnectionTimeout" value="60" /> 	
-        <property name="reapTimeout" value="20"/>  
-        <property name="maxIdleTime" value="60"/>  
-        <property name="maintenanceInterval" value="60"/>  
-        <property name="loginTimeout" value="60"/>  
-        <property name="testQuery">  
-            <value>select 1</value>  
-        </property>
-	</bean> -->
-
 	<!-- 使用 AbstractRoutingDataSource 动态切换数据源，但是在加事务的方法中无法切换，也就是说一个事务只能使用一个数据源,怎么解决还在寻找方法 -->
 <!-- 	<bean id="dataSource" class="com.classroom.wnn.util.DynamicDataSource">
 		<property name="targetDataSources">
@@ -129,6 +92,42 @@
 
 	<!-- masterDataSource数据源与mybatis绑定配置开始 -->
 	<!-- 绑定myBatis的 xml 文件 -->
+<!-- 	<bean id="masterSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="masterDataSource" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:com/classroom/wnn/mapper/*.xml</value>
+			</list>
+		</property>
+	</bean>
+	将dao接口和xml进行绑定
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage"
+			value="com.classroom.wnn.dao,com.classroom.wnn.dao.*" />
+		<property name="sqlSessionFactoryBeanName" value="masterSessionFactory" />
+	</bean> -->
+	<!-- masterDataSource数据源与mybatis绑定配置结束 -->
+	
+	
+	<!-- slaveDataSource数据源与mybatis绑定配置开始 -->
+	<!-- 绑定myBatis的 xml 文件 -->
+<!-- 	<bean id="slaveSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="slaveDataSource" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:com/classroom/wnn/mapper/mapperslave/*.xml</value>
+			</list>
+		</property>
+	</bean>
+	将dao接口和xml进行绑定
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage"
+			value="com.classroom.wnn.daoslave,com.classroom.wnn.daoslave.*" />
+		<property name="sqlSessionFactoryBeanName" value="slaveSessionFactory" />
+	</bean> -->
+	<!-- slaveDataSource数据源与mybatis绑定配置结束 -->
+
+
 	<bean id="masterSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="masterDataSource" />
 		<property name="mapperLocations">
@@ -137,32 +136,33 @@
 			</list>
 		</property>
 	</bean>
-	<!-- 将dao接口和xml进行绑定 -->
-	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage"
-			value="com.classroom.wnn.dao,com.classroom.wnn.dao.*" />
-		<property name="sqlSessionFactoryBeanName" value="masterSessionFactory" />
-	</bean>
-	<!-- masterDataSource数据源与mybatis绑定配置结束 -->
-	
-	
-	<!-- slaveDataSource数据源与mybatis绑定配置开始 -->
-	<!-- 绑定myBatis的 xml 文件 -->
 	<bean id="slaveSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="slaveDataSource" />
 		<property name="mapperLocations">
 			<list>
-				<value>classpath:com/classroom/wnn/mapper/mapperslave/*.xml</value>
+				<value>classpath:com/classroom/wnn/mapper/*.xml</value>
 			</list>
 		</property>
 	</bean>
-	<!-- 将dao接口和xml进行绑定 -->
-	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage"
-			value="com.classroom.wnn.daoslave,com.classroom.wnn.daoslave.*" />
-		<property name="sqlSessionFactoryBeanName" value="slaveSessionFactory" />
-	</bean>
-	<!-- slaveDataSource数据源与mybatis绑定配置结束 -->
+	
+    <!-- 配置自定义的SqlSessionTemplate模板，注入相关配置 -->  
+    <bean id="sqlSessionTemplate" class="com.classroom.wnn.util.dynamicdatasource.CustomSqlSessionTemplate">  
+        <constructor-arg ref="masterSessionFactory" />  
+        <property name="targetSqlSessionFactorys">  
+            <map>       
+                <entry value-ref="masterSessionFactory" key="dataMySQL1"/>  
+                <entry value-ref="slaveSessionFactory" key="dataMySQL2"/>  
+            </map>   
+        </property>  
+    </bean> 	
+
+    <!-- 通过扫描的模式，扫描目录在com/hoo/任意目录下的mapper目录下，所有的mapper都需要继承SqlMapper接口的接口 -->  
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">  
+        <property name="basePackage" value="com.classroom.wnn.dao,com.classroom.wnn.dao.*"/>  
+        <!-- 注意注入sqlSessionTemplate -->  
+        <property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate"/>  
+        <!-- <property name="markerInterface" value="com.hoo.framework.mybatis.SqlMapper"/>   -->
+    </bean>
 
 	<!-- 以下为事物配置 -->
   	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"  
@@ -201,7 +201,7 @@
 	<!-- 事物配置结束 -->
 	
 	<!-- 配置druid监控spring jdbc -->
-<!--  	<bean id="druid-stat-interceptor"
+  	<bean id="druid-stat-interceptor"
 		class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor">
 	</bean>
 	<bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut"
@@ -215,5 +215,5 @@
 	<aop:config>
 		<aop:advisor advice-ref="druid-stat-interceptor"
 			pointcut-ref="druid-stat-pointcut" />
-	</aop:config> -->
+	</aop:config>
 </beans>
