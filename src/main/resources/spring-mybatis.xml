@@ -11,9 +11,8 @@ http://www.springframework.org/schema/aop
 http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
 ">
 
-
 	<!-- 配置数据源 -->
-	<bean name="dataMySQL1" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean" init-method="init"  
+	<bean name="dataMySQL" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean" init-method="init"  
           destroy-method="close">
         <property name="uniqueResourceName" value="atomikosNonXADS1" />  
         <property name="driverClassName" value="${driverClassName}" />  
@@ -33,49 +32,15 @@ http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
             <value>select 1</value>  
         </property> 
 	</bean>
-	<!-- mysql 数据源2 -->
-	<bean name="dataMySQL2" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean" init-method="init"  
-          destroy-method="close">
-	    <property name="uniqueResourceName" value="atomikosNonXADS2" />  
-        <property name="driverClassName" value="${driverClassName}" />  
-        <property name="url" value="${jdbc_url2}" />  
-        <property name="user" value="${jdbc_username}" />  
-        <property name="password" value="${jdbc_password}" />  
-        <property name="poolSize" value="5" />  
-        <property name="minPoolSize" value="10"/>  
-        <property name="maxPoolSize" value="30"/> 
-        <property name="borrowConnectionTimeout" value="60" /> 	
-        <property name="reapTimeout" value="20"/>  
-        <!-- 最大空闲时间 -->  
-        <property name="maxIdleTime" value="60"/>  
-        <property name="maintenanceInterval" value="60"/>  
-        <property name="loginTimeout" value="60"/>  
-        <property name="testQuery">  
-            <value>select 1</value>  
-        </property>
-	</bean>
-
-	<!-- 使用这个数据源切换方式最好在每一次运行sql方法之前都先确认一下数据源 -->
-	<!-- 使用 AbstractRoutingDataSource 动态切换数据源，但是在加事务的方法中无法切换，也就是说一个事务只能使用一个数据源,怎么解决还在寻找方法 -->
-	<bean id="dataSource" class="com.classroom.wnn.util.DynamicDataSource">
-		<property name="targetDataSources">
-			<map key-type="java.lang.String">
-				<entry value-ref="dataMySQL1" key="dataMySQL1"></entry>
-				<entry value-ref="dataMySQL2" key="dataMySQL2"></entry>
-			</map>
-		</property>
-		<property name="defaultTargetDataSource" ref="dataMySQL1"></property>      <!-- 默认使用dataMySQL1的数据源 -->
-	</bean>
 
 	<!-- 绑定myBatis的 xml 文件 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="dataMySQL" />
 		<property name="mapperLocations">
 			<list>
 				<value>classpath:com/classroom/wnn/mapper/*.xml</value>
 			</list>
 		</property>
-
 	</bean>
 	<!-- 将dao接口和xml进行绑定 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
@@ -83,31 +48,6 @@ http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
 			value="com.classroom.wnn.dao,com.classroom.wnn.dao.*" />
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
 	</bean>
-	
-<!--  	 <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"  
-        init-method="init" destroy-method="close">  
-        <property name="forceShutdown">  
-            <value>true</value>  
-        </property>  
-    </bean>  
-  
-  	事务默认超时时间
-    <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">  
-        <property name="transactionTimeout" value="300" />  
-    </bean>  
-  
-    <bean id="springTransactionManager"  
-        class="org.springframework.transaction.jta.JtaTransactionManager">  
-        <property name="transactionManager">  
-            <ref bean="atomikosTransactionManager" />  
-        </property>  
-        <property name="userTransaction">  
-            <ref bean="atomikosUserTransaction" />  
-        </property>  
-    </bean>  
-      
-    <tx:annotation-driven transaction-manager="springTransactionManager"/>  -->  
-   
 
 	<!-- 配置事务管理器 -->
  	<bean id="transactionManager"
@@ -118,22 +58,33 @@ http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
 	<!-- 注解方式配置事物 -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
-	<!-- 拦截器方式配置事物 <tx:advice id="transactionAdvice" transaction-manager="transactionManager"> 
-		<tx:attributes> <tx:method name="add*" propagation="REQUIRED" /> <tx:method 
-		name="append*" propagation="REQUIRED" /> <tx:method name="insert*" propagation="REQUIRED" 
-		/> <tx:method name="save*" propagation="REQUIRED" /> <tx:method name="update*" 
-		propagation="REQUIRED" /> <tx:method name="modify*" propagation="REQUIRED" 
-		/> <tx:method name="edit*" propagation="REQUIRED" /> <tx:method name="delete*" 
-		propagation="REQUIRED" /> <tx:method name="remove*" propagation="REQUIRED" 
-		/> <tx:method name="repair" propagation="REQUIRED" /> <tx:method name="delAndRepair" 
-		propagation="REQUIRED" /> <tx:method name="get*" propagation="SUPPORTS" /> 
-		<tx:method name="find*" propagation="SUPPORTS" /> <tx:method name="load*" 
-		propagation="SUPPORTS" /> <tx:method name="search*" propagation="SUPPORTS" 
-		/> <tx:method name="datagrid*" propagation="SUPPORTS" /> <tx:method name="*" 
-		propagation="SUPPORTS" /> </tx:attributes> </tx:advice> <aop:config> <aop:pointcut 
-		id="transactionPointcut" expression="execution(* myproject.service..*Impl.*(..))" 
-		/> <aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice" 
-		/> </aop:config> -->
+	<!-- 拦截器方式配置事物 -->
+<!-- 	
+	<aop:config> 
+		<aop:pointcut id="transactionPointcut" expression="execution(* myproject.service..*Impl.*(..))" /> 
+		<aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice" /> 
+	</aop:config>
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager"> 
+			<tx:attributes> 
+				<tx:method name="add*" propagation="REQUIRED" /> 
+				<tx:method name="append*" propagation="REQUIRED" /> 
+				<tx:method name="insert*" propagation="REQUIRED" /> 
+				<tx:method name="save*" propagation="REQUIRED" /> 
+				<tx:method name="update*" propagation="REQUIRED" /> 
+				<tx:method name="modify*" propagation="REQUIRED" /> 
+				<tx:method name="edit*" propagation="REQUIRED" /> 
+				<tx:method name="delete*" propagation="REQUIRED" /> 
+				<tx:method name="remove*" propagation="REQUIRED" /> 
+				<tx:method name="repair" propagation="REQUIRED" /> 
+				<tx:method name="delAndRepair" propagation="REQUIRED" /> 
+				<tx:method name="get*" propagation="SUPPORTS" /> 
+				<tx:method name="find*" propagation="SUPPORTS" /> 
+				<tx:method name="load*" propagation="SUPPORTS" /> 
+				<tx:method name="search*" propagation="SUPPORTS" /> 
+				<tx:method name="datagrid*" propagation="SUPPORTS" /> 
+				<tx:method name="*" propagation="SUPPORTS" /> 
+			</tx:attributes> 
+	</tx:advice>  -->
 
 	<!-- 配置druid监控spring jdbc -->
 	<bean id="druid-stat-interceptor"
