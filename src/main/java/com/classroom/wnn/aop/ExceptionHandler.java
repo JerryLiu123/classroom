@@ -15,8 +15,8 @@ public class ExceptionHandler implements ThrowsAdvice {
 	public void afterThrowing(Exception e) throws Throwable{
 		// TODO Auto-generated method stub
 		LOGGER.info("--------集中异常处理---------");
-        System.out.println("抛出的异常:    " + e.getMessage()+">>>>>>>" + e.getCause());  
-        System.out.println("异常详细信息：　　　"+e.fillInStackTrace());
+        System.out.println("抛出的异常:    " + e.getMessage()+"\n" + e.getCause());  
+        System.out.println("异常详细信息：　" + e.fillInStackTrace());
         System.out.println(e.getStackTrace().length + "-----" + e.getStackTrace()[0]);
 	}
 }

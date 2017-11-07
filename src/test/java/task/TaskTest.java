@@ -21,6 +21,7 @@ import com.classroom.wnn.schedule.BaseQuartzScheduler;
 import com.classroom.wnn.service.RedisService;
 import com.classroom.wnn.service.VideoService;
 import com.classroom.wnn.task.RedisThreadPool;
+import com.classroom.wnn.task.TestTaskWork;
 import com.classroom.wnn.util.DataSourceContextHolder;
 import com.classroom.wnn.util.HdfsFileSystem;
 import com.classroom.wnn.util.constants.Constants;
@@ -28,8 +29,8 @@ import com.classroom.wnn.util.lock.RedisLockUtil;
 
 public class TaskTest extends BaseTest{
 
-/*	@Autowired
-	private RedisThreadPool redisThreadPool;*/
+	@Autowired
+	private RedisThreadPool redisThreadPool;
 /*	@Autowired
 	private BaseQuartzScheduler myWork;*/
 	@Autowired
@@ -64,38 +65,38 @@ public class TaskTest extends BaseTest{
 			System.err.println(e1.getLocalizedMessage());
 		}*/
 		
-		new Thread(new Runnable() {
-			
-			public void run() {
-				// TODO Auto-generated method stub
-				try {
-					videoService.testException();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}).start();
-		
-		new Thread(new Runnable() {
-			
-			public void run() {
-				// TODO Auto-generated method stub
-				try {
-					videoService.testException2();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}).start();
+//		new Thread(new Runnable() {
+//			
+//			public void run() {
+//				// TODO Auto-generated method stub
+//				try {
+//					videoService.testException2();
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		}).start();
+//		
+//		new Thread(new Runnable() {
+//			
+//			public void run() {
+//				// TODO Auto-generated method stub
+//				try {
+//					videoService.testException();
+//				} catch (Exception e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		}).start();
 //		System.out.println(DataSourceContextHolder.getDbType());
-		try {
-			Thread.sleep(15000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			videoService.testException();
+//		} catch (Exception e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		
 //		System.err.println("-----------hdfs--开始------------");
 //		try {
@@ -120,16 +121,22 @@ public class TaskTest extends BaseTest{
 //		System.err.println();
 		
 //		System.err.println("-----------reids添加任务队列--开始------------");
-//		for(int i=0; i<10 ;i++){
-//			TaskImportTest test = new TaskImportTest(i+"");
-//			test.setTaskId(i);
-//			try {
-//				redisThreadPool.pushFromTail(ObjectUtil.objectToBytes(test));
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
+		for(int i=0; i<2 ;i++){
+			TestTaskWork test = new TestTaskWork(i);
+			test.setTaskId(i);
+			try {
+				redisThreadPool.pushFromTail(test);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		try {
+			Thread.sleep(15000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 //		System.out.println("--------当前队列状态 begin----------");
 //		System.out.println(redisThreadPool.getInfo());
 //		System.out.println("--------当前队列状态 end----------");

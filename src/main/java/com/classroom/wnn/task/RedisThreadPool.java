@@ -3,6 +3,7 @@ package com.classroom.wnn.task;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,7 @@ public class RedisThreadPool implements InitializingBean{
     private byte[] rawKey;  
     private RedisConnectionFactory factory;  
     private RedisConnection connection;//for blocking  
-    private BoundListOperations<String, byte[]> listOperations;//noblocking
+    private BoundListOperations<String, Task> listOperations;//noblocking
     //感觉hash主要用于对于对象的修改时比较有用，但是在本实例中对象并不需要修改，所以就没有使用hash
     //private BoundHashOperations<String, byte[], Task> hashOperations;
       
@@ -80,8 +81,6 @@ public class RedisThreadPool implements InitializingBean{
     private int worker_num = 5;
     /* 池中的所有线程 */
     public PoolWorker[] workers;
-    /*处理完的线程ID*/
-    private Map<String, Boolean> finishWorks;
       
     /**
      * 初始化方法
@@ -96,9 +95,7 @@ public class RedisThreadPool implements InitializingBean{
         rawKey = redisTemplate.getKeySerializer().serialize(key);  
         listOperations = redisTemplate.boundListOps(key); 
         //hashOperations = redisTemplate.boundHashOps(key);
-        redisTemplate.setValueSerializer(null);//如果不将序列化方法设为null，后面它会自己再序列化一次
         workers = new PoolWorker[worker_num];
-        finishWorks = new HashMap<String, Boolean>();
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new PoolWorker(i);
         }
@@ -121,90 +118,35 @@ public class RedisThreadPool implements InitializingBean{
      * 从队列的头，插入 
      * @throws Exception 
      */  
-    public void pushFromHead(byte[] value) throws Exception{ 
+    public void pushFromHead(Task value) throws Exception{ 
         listOperations.leftPush(value);  
         //listOperations.notifyAll();
     }  
     /**
      * 从尾部插入  
      * @param value
+     * @throws Exception 
      */
-    public void pushFromTail(byte[] value){ 
+    public void pushFromTail(Task value) throws Exception{ 
         listOperations.rightPush(value);  
         //listOperations.notifyAll();
     }  
       
     /** 
-     * noblocking 
+     * 从头取出任务
      * @return null if no item in queue 
      */  
-    public byte[] removeFromHead(){  
+    public Task takeFromHead() throws Exception{  
         return listOperations.leftPop();  
-    }  
-      
-    public byte[] removeFromTail(){  
-        return listOperations.rightPop();  
-    }  
-      
-    /** 
-     * blocking 
-     * 从头取出并删除第一个元素 
-     * @return 
-     * @throws TimeoutException 
-     */  
-    public synchronized byte[] takeFromHead(int timeout) throws InterruptedException, TimeoutException{  
-    	String value = redisLockUtil.addLock(TASK_LOCK, Long.valueOf(3*60*1000));
-    	//Thread.sleep(2*60*1000);
-        //lock.lockInterruptibly();  
-        try{  
-            List<byte[]> results = connection.bLPop(timeout, rawKey);  
-            if(CollectionUtils.isEmpty(results)){  
-                return null;  
-            }
-            return results.get(1);
-            //return (byte[])redisTemplate.getValueSerializer().deserialize(results.get(1));  
-        }finally{
-        	redisLockUtil.unLock(TASK_LOCK, value);
-            //lock.unlock();  
-        }  
     }  
     
     /**
-     * 取出任务
+     * 从尾部取出任务
      * @return
-     * @throws InterruptedException
-     * @throws TimeoutException 
      */
-    public byte[] takeFromHead() throws InterruptedException, TimeoutException{  
-        return takeFromHead(0);  
+    public Task takeFromTail() throws Exception{  
+        return listOperations.rightPop();  
     }  
-    
-    /** 
-     * blocking 
-     * remove and get last item from queue:BRPOP 
-     * 从尾部取出并删除第一个元素
-     * @return 
-     * @throws TimeoutException 
-     */  
-    public synchronized byte[] takeFromTail(int timeout) throws InterruptedException, TimeoutException{   
-    	String value = redisLockUtil.addLock(TASK_LOCK, Long.valueOf(2*60*1000));
-        //lock.lockInterruptibly();
-        try{  
-            List<byte[]> results = connection.bRPop(timeout, rawKey);  
-            if(CollectionUtils.isEmpty(results)){  
-                return null;  
-            }  
-            return results.get(1);
-            //return (byte[])redisTemplate.getValueSerializer().deserialize(results.get(1));  
-        }finally{  
-        	redisLockUtil.unLock(TASK_LOCK, value);
-            //lock.unlock();  
-        }  
-    }  
-      
-    public byte[] takeFromTail() throws InterruptedException, TimeoutException{  
-        return takeFromHead(0);  
-    } 
       
     /**
     * 销毁线程池
@@ -218,11 +160,7 @@ public class RedisThreadPool implements InitializingBean{
             RedisConnectionUtils.releaseConnection(connection, factory); 
     	}
     }
-    //获得UUID
-    private String getUUID(){
-    	UUID uuid = UUID.randomUUID();
-    	return uuid.toString();
-    }
+
     /**
     * 池中工作线程
     * 
@@ -257,7 +195,7 @@ public class RedisThreadPool implements InitializingBean{
                     while (listOperations.size()<=0) {
                         try {
                             /* 任务队列为空，则等待有新任务加入从而被唤醒 */
-                        	listOperations.wait(20);
+                        	listOperations.wait(200);
                         } catch (InterruptedException ie) {
                             logger.error(ie);
                         }
@@ -265,25 +203,22 @@ public class RedisThreadPool implements InitializingBean{
                     /* 取出任务执行 */
                     try {
                     	//反序列话对象
-                    	ByteArrayInputStream in = new ByteArrayInputStream(takeFromHead());
-                    	ObjectInputStream sIn = new ObjectInputStream(in);
-						r = (Task) sIn.readObject();
-					} catch (TimeoutException e) {
+//                    	ByteArrayInputStream in = new ByteArrayInputStream(takeFromHead());
+//                    	if(in != null) {
+//                         	ObjectInputStream sIn = new ObjectInputStream(in);
+//                        	Object ob = sIn.readObject();
+//    						if(Task.class.isAssignableFrom(ob.getClass())) {
+//    							r = (Task) ob;
+//    						}else {
+//    							logger.error(ob.getClass().getName()+"--不是此线程池可以执行的方法");
+//    							r = null;
+//    						}
+//                    	}
+                    	r = takeFromHead();
+					}catch (Exception e) {
 						// TODO Auto-generated catch block
+						logger.error("获得任务失败", e);
 						r = null;
-						logger.error("获得锁超时----"+e);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						r = null;
-						logger.error(e);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						r = null;
-						logger.error(e);
-					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
-						r = null;
-						logger.error(e);
 					}
                 }
                 if (r != null) {
@@ -293,7 +228,9 @@ public class RedisThreadPool implements InitializingBean{
                         if (r.needExecuteImmediate()) {
                             new Thread(r).start();
                         } else {
+                        	r.setBeginExceuteTime(new Date());
                             r.run();
+                            r.setFinishTime(new Date());
                         }
                     } catch (Exception e) {
                         logger.error(e);
@@ -304,13 +241,7 @@ public class RedisThreadPool implements InitializingBean{
             }
         }
     }
-	public synchronized Map<String, Boolean> getFinishWorks() {
-		return finishWorks;
-	}
 
-	public void setFinishWorks(Map<String, Boolean> finishWorks) {
-		this.finishWorks = finishWorks;
-	}
     public void setRedisTemplate(RedisTemplate redisTemplate) {  
         this.redisTemplate = redisTemplate;  
     } 

@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:tx="http://www.springframework.org/schema/tx"
     xmlns:aop="http://www.springframework.org/schema/aop"
-    xsi:schemaLocation="http://www.springframework.org/schema/mvc 
-    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+    xsi:schemaLocation="
     http://www.springframework.org/schema/beans 
-    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-    http://www.springframework.org/schema/context 
-    http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
     http://www.springframework.org/schema/tx 
-    http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+    http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
     http://www.springframework.org/schema/aop 
-    http://www.springframework.org/schema/aop/spring-aop-4.0.xsd" default-lazy-init="true">
+    http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
     
     
     
@@ -35,14 +31,15 @@
         <property name="xaProperties">
             <props>
                 <prop key="driverClassName">${jdbc.driverClassName}</prop>
+                <prop key="dbType">mysql</prop>
+                <prop key="defaultAutoCommit">false</prop>
                 <prop key="url">${master.jdbc.url}</prop>
                 <prop key="password">${jdbc.password}</prop>
-                 <!--  <prop key="user">${jdbc.username}</prop> --> <!-- mysql -->
                 <prop key="username">${jdbc.username}</prop>   <!-- durid -->
-                <prop key="initialSize">0</prop>
-                <prop key="maxActive">20</prop> <!-- 若不配置则代码执行"{dataSource-1} inited"此处停止  -->
+                <prop key="initialSize">${jdbc.initialSize}</prop>
+                <prop key="maxActive">${jdbc.maxActive}</prop>
                 <prop key="minIdle">0</prop>
-                <prop key="maxWait">60000</prop>
+                <prop key="maxWait">${jdbc.maxWait}</prop>
                 <prop key="validationQuery">${validationQuery}</prop>
                 <prop key="testOnBorrow">false</prop>
                 <prop key="testOnReturn">false</prop>
@@ -51,6 +48,7 @@
                 <prop key="removeAbandonedTimeout">1800</prop>
                 <prop key="logAbandoned">true</prop>
                 <prop key="filters">mergeStat</prop>
+                <prop key="poolPreparedStatements">${jdbc.poolPreparedStatements}</prop>
             </props>
         </property>
     </bean>  
@@ -59,14 +57,15 @@
         <property name="xaProperties">
             <props>
                 <prop key="driverClassName">${jdbc.driverClassName}</prop>
+                <prop key="dbType">mysql</prop>
+                <prop key="defaultAutoCommit">false</prop>
                 <prop key="url">${slave.jdbc.url}</prop>
                 <prop key="password">${jdbc.password}</prop>
-                <!--  <prop key="user">${jdbc.username}</prop> -->
                 <prop key="username">${jdbc.username}</prop>
-                <prop key="initialSize">0</prop>
-                <prop key="maxActive">20</prop>
+                <prop key="initialSize">${jdbc.initialSize}</prop>
+                <prop key="maxActive">${jdbc.maxActive}</prop>
                 <prop key="minIdle">0</prop>
-                <prop key="maxWait">60000</prop>
+                <prop key="maxWait">${jdbc.maxWait}</prop>
                 <prop key="validationQuery">${validationQuery}</prop>
                 <prop key="testOnBorrow">false</prop>
                 <prop key="testOnReturn">false</prop>
@@ -75,11 +74,13 @@
                 <prop key="removeAbandonedTimeout">1800</prop>
                 <prop key="logAbandoned">true</prop>
                 <prop key="filters">mergeStat</prop>
+                <prop key="poolPreparedStatements">${jdbc.poolPreparedStatements}</prop>
             </props>
         </property>
     </bean> 
 
-	<!-- 使用 AbstractRoutingDataSource 动态切换数据源，但是在加事务的方法中无法切换，也就是说一个事务只能使用一个数据源,怎么解决还在寻找方法 -->
+	<!-- ============================================================================================================= -->
+	<!-- 使用 AbstractRoutingDataSource 动态切换数据源，但是在加事务的方法中无法切换，已弃用-->
 <!-- 	<bean id="dataSource" class="com.classroom.wnn.util.DynamicDataSource">
 		<property name="targetDataSources">
 			<map key-type="java.lang.String">
@@ -126,8 +127,10 @@
 		<property name="sqlSessionFactoryBeanName" value="slaveSessionFactory" />
 	</bean> -->
 	<!-- slaveDataSource数据源与mybatis绑定配置结束 -->
+	<!-- ============================================================================================================= -->
 
-
+	<!-- 使用切换SessionFactory 的方式实现切换数据源操作-->
+	<!-- SessionFactory    1 -->
 	<bean id="masterSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="masterDataSource" />
 		<property name="mapperLocations">
@@ -136,6 +139,7 @@
 			</list>
 		</property>
 	</bean>
+	<!-- SessionFactory    2 -->
 	<bean id="slaveSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="slaveDataSource" />
 		<property name="mapperLocations">
@@ -156,16 +160,15 @@
         </property>  
     </bean> 	
 
-    <!-- 通过扫描的模式，扫描目录在com/hoo/任意目录下的mapper目录下，所有的mapper都需要继承SqlMapper接口的接口 -->  
+    <!-- 通过扫描的模式 将dao和sqlSessionTemplate进行绑定-->  
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">  
         <property name="basePackage" value="com.classroom.wnn.dao,com.classroom.wnn.dao.*"/>  
         <!-- 注意注入sqlSessionTemplate -->  
         <property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate"/>  
-        <!-- <property name="markerInterface" value="com.hoo.framework.mybatis.SqlMapper"/>   -->
     </bean>
 
 	<!-- 以下为事物配置 -->
-  	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"  
+   	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"  
         init-method="init" destroy-method="close">  
         <property name="forceShutdown">  
             <value>true</value>  
@@ -178,22 +181,26 @@
     </bean> 
   
   	<!-- jta事物管理器 -->
-     <bean id="transactionManager"  
-        class="org.springframework.transaction.jta.JtaTransactionManager">  
+     <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">  
         <property name="transactionManager">  
             <ref bean="atomikosTransactionManager" />  
         </property>  
         <property name="userTransaction">  
             <ref bean="atomikosUserTransaction" />  
         </property>  
-        <property name="allowCustomIsolationLevels" value="true"/>
+<!-- 	    <property name="transactionManagerName">
+	        <value>java:comp/TransactionSynchronizationRegistry</value>
+	    </property> -->
+        <property name="allowCustomIsolationLevels">
+        	<value>true</value>
+        </property>
     </bean>
     
       
-	<!-- 配置事务管理器 -->
-<!--  	<bean id="transactionManager"
+	<!-- 配置事务管理器(NoXA) -->
+<!--   	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="masterDataSource" />
 	</bean> -->
 
 	<!-- 注解方式配置事物 -->

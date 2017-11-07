@@ -285,7 +285,7 @@ public class StreamServlet extends HttpServlet {
 		info.setzFile(zone_fileName);
 		videoService.insertZoneVider(info);//插入分片信息
 		UploadHDFSTask hdfsTask = new UploadHDFSTask(contextHelper, IoUtil.getFile(zone_fileName), zone_fileName, String.valueOf(info.getId()));
-		redisThreadPool.pushFromTail(Convert.objectToBytes(hdfsTask));
+		redisThreadPool.pushFromTail(hdfsTask);
 		return flag;
 	}
 	
